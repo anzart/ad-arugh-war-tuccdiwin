@@ -268,25 +268,22 @@ nav.tabs .ticn svg.lic{width:1.35rem;height:1.35rem}
 .node-pop{
   position:absolute;top:calc(100% + 16px);left:50%;transform:translateX(-50%);
   width:230px;max-width:78vw;z-index:5;text-align:center;
-  background:var(--blue);color:#fff;border-radius:16px;padding:15px 15px 14px;
+  background:var(--nc,var(--blue));color:#fff;border-radius:16px;padding:15px 15px 14px;
   box-shadow:0 8px 20px rgba(0,0,0,.2);
   animation:popIn .13s ease-out;
 }
 .node-pop::before{
   content:"";position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
-  border:10px solid transparent;border-bottom-color:var(--blue);
+  border:10px solid transparent;border-bottom-color:var(--nc,var(--blue));
 }
-.node-pop.done{background:var(--yellow)}
-.node-pop.done::before{border-bottom-color:var(--yellow)}
 .node-pop .np-title{font-weight:800;font-size:1rem;font-family:var(--font-display)}
 .node-pop .np-sub{font-size:.82rem;opacity:.92;margin-top:3px}
 .node-pop .np-btn{
   display:block;width:100%;margin-top:13px;background:#fff;border-radius:12px;
-  padding:12px;font-weight:800;font-size:.82rem;letter-spacing:.03em;color:var(--blue-dark);
+  padding:12px;font-weight:800;font-size:.82rem;letter-spacing:.03em;color:var(--ncd,var(--blue-dark));
   box-shadow:0 3px 0 rgba(0,0,0,.14);
 }
 .node-pop .np-btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.14)}
-.node-pop.done .np-btn{color:var(--yellow-dark)}
 @keyframes popIn{from{opacity:0;transform:translateX(-50%) translateY(-6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
 /* ============ GENERIC CARD ============ */

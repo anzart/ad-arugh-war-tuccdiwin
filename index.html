@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="kab">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ad aruɣ war tuccḍiwin — Talemmizt n tira</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS — white background, Google palette
+   Mobile-first: full-height flex shell, bottom bars in-flow
+   (NOT position:fixed), inline SVG icons (no CDN dependency).
+   ============================================================ */
+:root{
+  --bg:#FFFFFF;
+  --card:#FFFFFF;
+  --ink:#202124;
+  --ink-soft:#5F6368;
+  --border:#DADCE0;
+  --blue:#4285F4;   --blue-dark:#1A73E8;  --blue-soft:#E8F0FE;
+  --green:#34A853;  --green-dark:#188038; --green-soft:#E6F4EA;
+  --yellow:#FBBC05; --yellow-dark:#F29900;--yellow-soft:#FEF7E0;
+  --red:#EA4335;    --red-dark:#C5221F;   --red-soft:#FCE8E6;
+  --radius:16px;
+  --shadow:0 1px 3px rgba(60,64,67,.18), 0 1px 2px rgba(60,64,67,.1);
+  --font-display:'Google Sans','Product Sans',ui-rounded,'Baloo 2',system-ui,sans-serif;
+  --font-body:Roboto,'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.5;
+  height:100vh;height:100dvh;
+  overflow:hidden;
+  touch-action:manipulation;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;font-size:inherit}
+h1,h2,h3{font-family:var(--font-display);line-height:1.2}
+svg.lic{width:1.05em;height:1.05em;vertical-align:-0.15em;display:inline-block;flex:none}
+
+/* ============ APP SHELL: header / scrollable main / bottom bar ============ */
+#app{
+  max-width:640px;margin:0 auto;
+  height:100vh;height:100dvh;
+  display:flex;flex-direction:column;
+  background:#fff;
+}
+header{
+  flex:none;position:relative;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  padding:10px 12px 12px;display:flex;align-items:center;gap:8px;flex-wrap:nowrap;
+}
+header::after{
+  content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;
+  background:linear-gradient(90deg,var(--blue) 0 25%,var(--red) 25% 50%,var(--yellow) 50% 75%,var(--green) 75% 100%);
+}
+.logo{display:flex;align-items:center;flex:none}
+.logo .yaz-badge{
+  width:40px;height:40px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--red-soft);border-radius:12px;
+}
+.logo .yaz{width:26px;height:26px;flex:none}
+.spacer{flex:1}
+.stat{display:flex;align-items:center;gap:3px;font-weight:700;font-size:.92rem;flex:none}
+.stat.hearts{color:var(--red)}
+.stat.xp{color:var(--yellow-dark)}
+.stat svg.lic{width:1.1em;height:1.1em}
+.lang-switch{
+  display:flex;border:1.5px solid var(--blue);border-radius:999px;overflow:hidden;
+  font-weight:700;font-size:.74rem;flex:none;
+}
+.lang-switch button{padding:4px 9px;color:var(--blue-dark);background:transparent}
+.lang-switch button.active{background:var(--blue);color:#fff}
+
+main{
+  flex:1 1 0;min-height:0;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px 14px 24px;
+}
+
+/* ---- bottom bars: normal flow, always on screen ---- */
+#bottombar{flex:none;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs{
+  background:#fff;border-top:1px solid var(--border);
+  display:flex;justify-content:center;gap:6px;padding:6px 8px;
+}
+nav.tabs button{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:6px 4px;border-radius:12px;font-weight:700;font-size:.72rem;color:var(--ink-soft);
+}
+nav.tabs button.active{background:var(--blue-soft);color:var(--blue-dark)}
+nav.tabs .ticn svg.lic{width:1.35rem;height:1.35rem}
+
+.foot{
+  background:#fff;border-top:1px solid var(--border);
+  padding:12px 14px;
+  transition:background .2s;
+}
+.foot.ok{background:var(--green-soft)}
+.foot.ko{background:var(--red-soft)}
+.fb-title{font-family:var(--font-display);font-weight:700;font-size:1rem;margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.foot.ok .fb-title{color:var(--green-dark)}
+.foot.ko .fb-title{color:var(--red-dark)}
+.fb-body{font-size:.9rem;margin-bottom:8px}
+.fb-body b{font-size:1rem}
+.bigbtn{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  background:var(--green);color:#fff;font-family:var(--font-display);font-weight:700;
+  font-size:1rem;border-radius:14px;padding:12px;box-shadow:0 3px 0 var(--green-dark);
+  transition:transform .1s;letter-spacing:.3px;
+}
+.bigbtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--green-dark)}
+.bigbtn:disabled{background:#F1F3F4;box-shadow:0 3px 0 var(--border);color:#9AA0A6}
+.bigbtn.redb{background:var(--red);box-shadow:0 3px 0 var(--red-dark)}
+.bigbtn.redb:active{box-shadow:0 1px 0 var(--red-dark)}
+.bigbtn.ghost{background:#fff;color:var(--blue-dark);border:2px solid var(--blue);box-shadow:0 3px 0 var(--blue-soft)}
+
+/* ============ DOWNLOAD BOOK + CONTACT CARDS ============ */
+.bookcard{
+  display:flex;align-items:center;gap:12px;
+  background:var(--green-soft);border:1px solid #CEEAD6;border-radius:var(--radius);
+  padding:14px;margin-bottom:16px;
+}
+.bookcard .bicn{
+  width:44px;height:44px;flex:none;border-radius:12px;background:#fff;
+  display:flex;align-items:center;justify-content:center;color:var(--green-dark);
+}
+.bookcard .bicn svg.lic{width:1.5rem;height:1.5rem}
+.bookcard .btxt{flex:1;min-width:0}
+.bookcard .btxt b{display:block;font-size:.98rem;color:var(--green-dark)}
+.bookcard .btxt span{font-size:.82rem;color:var(--ink-soft)}
+.dl-btn{
+  flex:none;display:inline-flex;align-items:center;gap:6px;
+  background:var(--green);color:#fff;font-weight:700;font-size:.86rem;
+  padding:9px 14px;border-radius:999px;text-decoration:none;
+  box-shadow:0 3px 0 var(--green-dark);
+}
+.dl-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--green-dark)}
+.dl-btn svg.lic{width:1.05rem;height:1.05rem}
+.contactcard{
+  background:var(--blue-soft);border:1px solid #C6DAFC;border-radius:var(--radius);
+  padding:14px 16px;margin:16px 0 4px;
+}
+.contactcard h3{font-size:.98rem;color:var(--blue-dark);display:flex;align-items:center;gap:7px}
+.contactcard p{font-size:.85rem;color:var(--ink-soft);margin:3px 0 8px}
+.contactcard a.mail{
+  display:inline-flex;align-items:center;gap:7px;font-weight:700;color:var(--blue-dark);
+  text-decoration:none;font-size:.95rem;background:#fff;border:1px solid #C6DAFC;
+  padding:8px 14px;border-radius:999px;
+}
+.contactcard a.mail svg.lic{width:1.05rem;height:1.05rem}
+
+/* ============ HOME / PATH ============ */
+.hero{
+  background:linear-gradient(135deg,var(--blue) 0%,var(--blue-dark) 100%);
+  color:#fff;border-radius:18px;padding:16px;margin-bottom:20px;
+  position:relative;overflow:hidden;box-shadow:var(--shadow);
+}
+.hero::after{
+  content:"ⵣ";position:absolute;right:-12px;bottom:-30px;font-size:7.5rem;opacity:.14;font-family:var(--font-display);
+}
+.hero h1{font-size:1.3rem;margin-bottom:5px}
+.hero p{font-size:.88rem;opacity:.95;max-width:36ch}
+.hero .streakline{margin-top:9px;display:inline-flex;gap:6px;align-items:center;background:rgba(255,255,255,.18);padding:4px 11px;border-radius:999px;font-weight:700;font-size:.82rem}
+
+.path{position:relative;display:flex;flex-direction:column;align-items:center;gap:30px;padding:8px 0 24px}
+.path::before{
+  content:"";position:absolute;top:20px;bottom:20px;width:6px;border-radius:3px;
+  background:repeating-linear-gradient(var(--border) 0 12px, transparent 12px 24px);
+}
+.node{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;width:190px;max-width:60vw}
+.node:nth-child(odd){transform:translateX(-44px)}
+.node:nth-child(even){transform:translateX(44px)}
+.node-btn{
+  width:78px;height:78px;border-radius:50%;position:relative;
+  display:flex;align-items:center;justify-content:center;
+  background:#fff;border:3px solid var(--border);color:var(--ink-soft);
+  box-shadow:var(--shadow);
+  transition:transform .15s;
+}
+.node-btn svg.lic{width:1.9rem;height:1.9rem}
+.node-btn:active{transform:scale(.95)}
+.node.done .node-btn{background:var(--yellow);border-color:var(--yellow-dark);color:#fff}
+.node.current .node-btn{background:var(--blue);border-color:var(--blue-dark);color:#fff;animation:pulse 1.8s infinite}
+.node .stars{font-size:.82rem;letter-spacing:2px;color:var(--yellow-dark);height:1em}
+.node .nlabel{font-weight:700;font-size:.8rem;text-align:center;color:var(--ink);background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:3px 9px}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@media (max-width:400px){
+  .node:nth-child(odd){transform:translateX(-30px)}
+  .node:nth-child(even){transform:translateX(30px)}
+  .node-btn{width:70px;height:70px}
+}
+
+/* ============ GENERIC CARD ============ */
+.card{
+  background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:14px;box-shadow:var(--shadow);margin-bottom:12px;
+}
+
+/* ============ LESSON SCREEN ============ */
+.lesson-top{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.quitbtn{color:var(--ink-soft);font-weight:700;display:flex;padding:4px}
+.quitbtn svg.lic{width:1.35rem;height:1.35rem}
+.pbar{flex:1;height:13px;background:#F1F3F4;border-radius:999px;overflow:hidden}
+.pbar>div{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--green-dark));border-radius:999px;transition:width .4s ease}
+.lesson-hearts{color:var(--red);font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:4px}
+.lesson-hearts svg.lic{width:1.15em;height:1.15em}
+
+.step{animation:slidein .3s ease}
+@keyframes slidein{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+.step.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:none}20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+
+.rulecard .rtag{
+  display:inline-flex;align-items:center;gap:5px;background:var(--blue-soft);color:var(--blue-dark);
+  font-weight:700;font-size:.7rem;border-radius:999px;padding:3px 10px;margin-bottom:9px;letter-spacing:.4px;
+}
+.rulecard p.rk{font-size:.98rem;font-weight:600}
+.rulecard p.rf{font-size:.9rem;color:var(--ink-soft);margin-top:8px;border-top:1.5px dashed var(--border);padding-top:8px}
+.exchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.exchips span{background:var(--yellow-soft);border:1.5px solid var(--yellow);border-radius:10px;padding:3px 9px;font-weight:700;font-size:.88rem;color:var(--ink)}
+
+.prompt{font-family:var(--font-display);font-weight:700;font-size:1.06rem;margin-bottom:12px}
+.wrongword{
+  display:inline-block;background:var(--red-soft);color:var(--red-dark);
+  text-decoration:line-through;font-weight:700;border-radius:10px;padding:4px 11px;font-size:1.04rem;
+}
+.ctxnote{font-size:.84rem;color:var(--ink-soft);margin-top:6px}
+
+.opts{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.opt{
+  text-align:left;background:#fff;border:2px solid var(--border);border-radius:14px;
+  padding:11px 13px;font-size:1rem;font-weight:600;box-shadow:var(--shadow);
+  transition:border-color .15s, background .15s, transform .1s;
+  display:flex;align-items:center;gap:8px;
+}
+.opt:active{transform:scale(.98)}
+.opt.sel{border-color:var(--blue);background:var(--blue-soft)}
+.opt.good{border-color:var(--green);background:var(--green-soft)}
+.opt.bad{border-color:var(--red);background:var(--red-soft)}
+.opts.tf{flex-direction:row}
+.opts.tf .opt{flex:1;justify-content:center;text-align:center}
+.opt .tficn-true{color:var(--green-dark);display:flex}
+.opt .tficn-false{color:var(--red-dark);display:flex}
+
+/* tiles (word-bank) */
+.answer-zone{
+  min-height:52px;border-bottom:2px dashed var(--border);
+  display:flex;flex-wrap:wrap;gap:8px;padding:8px 2px;margin-bottom:14px;
+}
+.bank{display:flex;flex-wrap:wrap;gap:8px}
+.tile{
+  background:#fff;border:1.5px solid var(--border);border-radius:12px;
+  padding:8px 12px;font-weight:700;font-size:1rem;box-shadow:var(--shadow);
+  transition:transform .1s;
+}
+.tile:active{transform:scale(.95)}
+.tile.used{opacity:.25;pointer-events:none}
+.answer-zone .tile{background:var(--blue-soft);border-color:var(--blue)}
+
+/* matching */
+.matchgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.mitem{
+  background:#fff;border:2px solid var(--border);border-radius:14px;
+  padding:11px 6px;font-weight:700;text-align:center;font-size:.94rem;
+  box-shadow:var(--shadow);
+}
+.mitem.sel{border-color:var(--blue);background:var(--blue-soft)}
+.mitem.lock{border-color:var(--green);background:var(--green-soft);opacity:.65;pointer-events:none}
+.mitem.err{border-color:var(--red);background:var(--red-soft)}
+
+/* ============ END SCREEN ============ */
+.endscreen{text-align:center;padding-top:16px}
+.endscreen .mascot{width:118px;margin:0 auto 6px;animation:bounce 1s infinite alternate ease-in-out}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+.endscreen h2{font-size:1.45rem;color:var(--blue-dark);margin-bottom:6px}
+.endstars{font-size:2rem;letter-spacing:6px;color:var(--yellow-dark);margin:8px 0}
+.endstats{display:flex;justify-content:center;gap:10px;margin:12px 0 18px}
+.endstats .pill{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:9px 14px;font-weight:700;box-shadow:var(--shadow)}
+.endstats .pill small{display:block;font-size:.68rem;color:var(--ink-soft);font-weight:600}
+
+/* ============ LIBRARY ============ */
+.lib h2{font-size:1.15rem;color:var(--blue-dark);margin:16px 0 10px}
+.lib details{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden}
+.lib summary{cursor:pointer;font-family:var(--font-display);font-weight:700;padding:12px 14px;font-size:.96rem;list-style:none;display:flex;align-items:center;gap:9px}
+.lib summary::-webkit-details-marker{display:none}
+.lib summary .sicn{display:flex;color:var(--blue-dark)}
+.lib summary .sicn svg.lic{width:1.2rem;height:1.2rem}
+.lib .dbody{padding:0 14px 14px}
+.rline{border-top:1.5px dashed var(--border);padding:9px 0}
+.rline p.rk{font-weight:600;font-size:.94rem}
+.rline p.rf{font-size:.87rem;color:var(--ink-soft);margin-top:4px}
+table.reft{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:8px}
+table.reft th{background:var(--blue-soft);color:var(--blue-dark);text-align:left;padding:6px 8px;font-size:.78rem}
+table.reft td{border-bottom:1px solid var(--border);padding:6px 8px}
+table.reft td.w{color:var(--red-dark);text-decoration:line-through;font-weight:600}
+table.reft td.r{color:var(--green-dark);font-weight:700}
+.symrow{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.symrow span{background:var(--yellow-soft);border:1.5px solid var(--yellow);border-radius:10px;padding:4px 9px;font-weight:700;color:var(--ink)}
+
+/* confetti */
+.cf{position:fixed;top:-16px;z-index:100;width:10px;height:16px;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.6}}
+
+.modal-bg{position:fixed;inset:0;background:rgba(32,33,36,.5);z-index:80;display:flex;align-items:center;justify-content:center;padding:24px}
+.modal{background:#fff;border-radius:20px;padding:20px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.modal h3{font-size:1.15rem;margin-bottom:8px;color:var(--red-dark)}
+.modal p{font-size:.92rem;margin-bottom:14px}
+.modal .bigicn{color:var(--red);margin-bottom:6px;display:flex;justify-content:center}
+.modal .bigicn svg.lic{width:3rem;height:3rem}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo" role="img" aria-label="Yaz — ⵣ">
+      <span class="yaz-badge">
+        <svg class="yaz" viewBox="0 0 60 60" aria-hidden="true">
+          <path d="M30 6 L14 20 M30 6 L46 20 M30 6 L30 40 M14 54 L30 40 L46 54 M8 32 L52 32" stroke="#EA4335" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </span>
+    </div>
+    <div class="spacer"></div>
+    <div class="stat hearts"><span id="hIcn"></span><span id="statHearts">4</span></div>
+    <div class="stat xp"><span id="xIcn"></span><span id="statXP">0</span></div>
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button id="btnKab" onclick="setLang('kab')">TAQ</button>
+      <button id="btnFr" onclick="setLang('fr')">FR</button>
+    </div>
+  </header>
+
+  <main id="main"></main>
+
+  <div id="bottombar">
+    <div class="foot" id="foot" style="display:none"><div id="footWrap"></div></div>
+    <nav class="tabs" id="tabs">
+      <button id="tabHome" onclick="goTab('home')"><span class="ticn" id="tabHomeI"></span><span id="tabHomeL">Agejdan</span></button>
+      <button id="tabLib" onclick="goTab('lib')"><span class="ticn" id="tabLibI"></span><span id="tabLibL">Ilugan</span></button>
+    </nav>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ================================================================
+   Ad aruɣ war tuccḍiwin — interactive Kabyle orthography trainer
+   All rules and error/correction pairs come from the booklet
+   "Ad aruɣ war tuccḍiwin" (Tala uMaziɣ).
+   Locales: 'kab' (100% Kabyle) and 'fr' (French explanations).
+   Icons: inline SVG (Lucide paths embedded — no CDN, always renders).
+   Layout: flex shell; bottom bar is in normal flow, never off-screen.
+   ================================================================ */
+
+/* ---------------- inline icon set (24x24, stroke) ---------------- */
+const ICONS = {
+  "home":'<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  "book-open":'<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  "heart":'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+  "heart-crack":'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="m12 13-1-1 2-2-3-3 2-2"/>',
+  "star":'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  "x":'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  "check":'<path d="M20 6 9 17l-5-5"/>',
+  "flame":'<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  "graduation-cap":'<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
+  "book-marked":'<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><polyline points="10 2 10 10 13 7 16 10 16 2"/>',
+  "arrow-right":'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  "circle-check":'<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+  "circle-x":'<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+  "type":'<polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/>',
+  "spell-check":'<path d="m6 16 6-12 6 12"/><path d="M8 12h8"/><path d="m16 20 2 2 4-4"/>',
+  "link":'<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+  "repeat-2":'<path d="m2 9 3-3 3 3"/><path d="M13 18H7a2 2 0 0 1-2-2V6"/><path d="m22 15-3 3-3-3"/><path d="M11 6h6a2 2 0 0 1 2 2v10"/>',
+  "zap":'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  "minus":'<path d="M5 12h14"/>',
+  "ban":'<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
+  "component":'<path d="M5.5 8.5 9 12l-3.5 3.5L2 12l3.5-3.5Z"/><path d="m12 2 3.5 3.5L12 9 8.5 5.5 12 2Z"/><path d="M18.5 8.5 22 12l-3.5 3.5L15 12l3.5-3.5Z"/><path d="m12 15 3.5 3.5L12 22l-3.5-3.5L12 15Z"/>',
+  "tags":'<path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19"/><path d="M9.586 5.586A2 2 0 0 0 8.172 5H3a1 1 0 0 0-1 1v5.172a2 2 0 0 0 .586 1.414L8.29 18.29a2.426 2.426 0 0 0 3.42 0l3.58-3.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="6.5" cy="9.5" r=".5" fill="currentColor"/>',
+  "pen-line":'<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>',
+  "quote":'<path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/>',
+  "languages":'<path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/>',
+  "library":'<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>',
+  "download":'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+  "mail":'<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  "book":'<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/>'
+};
+/* I(name, filled) -> inline SVG string; always renders, no hydration */
+function I(name, filled){
+  const body = ICONS[name] || ICONS["star"];
+  const fill = filled ? "currentColor" : "none";
+  return '<svg class="lic" viewBox="0 0 24 24" fill="'+fill+'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+body+'</svg>';
+}
+
+/* ---------------- i18n UI strings ---------------- */
+const I18N = {
+  kab: {
+    tabHome:"Agejdan", tabLib:"Ilugan",
+    heroTitle:"Ad aruɣ war tuccḍiwin!",
+    heroSub:"Win yebɣan Tamaziɣt, ad yissin tira-s! Lɛeb, lmed, seɣti.",
+    lessons:"Timsirin", start:"Bdu", replay:"Ɛawed",
+    check:"Senqed", cont:"Kemmel", skipRule:"Gziɣ, kemmel!",
+    ok:"Yelha!", okAlt:"D ayen icebḥen!",
+    ko:"Tuccḍa!", theFix:"Aseɣti:",
+    pickCorrect:"Fren tira taseɣtit:",
+    fixThis:"Seɣti tuccḍa-a:",
+    buildIt:"Suddes tafyirt taseɣtit:",
+    matchIt:"Semlil yal awal d unamek-is:",
+    tfQ:"D tidet neɣ d lekdeb?",
+    tTrue:"D tidet", tFalse:"D lekdeb",
+    lessonDone:"Tfukkeḍ tamsirt!",
+    xpEarned:"tineqqiḍin", mistakes:"tuccḍiwin",
+    backHome:"Uɣal ɣer ugejdan",
+    heartsOut:"Ulawen fukken!",
+    heartsOutMsg:"Ulac aɣilif — kemmel s ulmud, neɣ ɛawed tamsirt.",
+    keepGoing:"Kemmel s ulmud", restart:"Ɛawed si tazwara",
+    rule:"Alugen", quiz:"Urar",
+    libTitle:"Ilugan igejdanen n tmaziɣt",
+    libSub:"Akk ilugan n teftart, taggayt s taggayt.",
+    errCol:"Tuccḍa", fixCol:"Aseɣti",
+    glossary:"Tamawalt", sources:"Tiɣbula", alphabet:"Agemmay",
+    letter:"Asekkil", lname:"Isem-is", lex:"Amedya",
+    streak:"ussan n uɣimi",
+    getBook:"Sider adlis", getBookSub:"Adlis « Ad aruɣ war tuccḍiwin » s PDF, d ilelli.",
+    download:"Sider PDF",
+    contact:"Nermes-aɣ", contactSub:"Ma tebɣiḍ ad d-ternuḍ neɣ ad tseɣtiḍ kra:",
+  },
+  fr: {
+    tabHome:"Accueil", tabLib:"Règles",
+    heroTitle:"Ad aruɣ war tuccḍiwin!",
+    heroSub:"« J'écrirai sans fautes ! » — Joue, apprends et corrige ton kabyle écrit.",
+    lessons:"Leçons", start:"Commencer", replay:"Rejouer",
+    check:"Vérifier", cont:"Continuer", skipRule:"Compris, continuer !",
+    ok:"Bravo !", okAlt:"Excellent !",
+    ko:"Oups, faute !", theFix:"Correction :",
+    pickCorrect:"Choisis la forme correcte :",
+    fixThis:"Corrige cette faute :",
+    buildIt:"Assemble la phrase correcte :",
+    matchIt:"Associe chaque mot à son sens :",
+    tfQ:"Vrai ou faux ?",
+    tTrue:"Vrai", tFalse:"Faux",
+    lessonDone:"Leçon terminée !",
+    xpEarned:"points", mistakes:"fautes",
+    backHome:"Retour à l'accueil",
+    heartsOut:"Plus de cœurs !",
+    heartsOutMsg:"Pas de souci — continue en mode entraînement, ou recommence la leçon.",
+    keepGoing:"Mode entraînement", restart:"Recommencer",
+    rule:"Règle", quiz:"Jeu",
+    libTitle:"Règles principales du tamazight",
+    libSub:"Toutes les règles du livret, catégorie par catégorie.",
+    errCol:"Faute", fixCol:"Correction",
+    glossary:"Lexique", sources:"Sources", alphabet:"Alphabet",
+    letter:"Lettre", lname:"Nom", lex:"Exemple",
+    streak:"jours d'affilée",
+    getBook:"Télécharger le livre", getBookSub:"Le livre « Ad aruɣ war tuccḍiwin » en PDF, gratuitement.",
+    download:"Télécharger le PDF",
+    contact:"Contact", contactSub:"Pour toute remarque ou correction :",
+  }
+};
+
+/* ---------------- Error -> correction pairs (from the booklet) ---------------- */
+const P = {
+  ae: [["Yara","Yerra"],["Xarṣum","Xersum"],["Tarfed","Terfed"],["Taqqaruyet","Taqqerruyt"],["Ad yefaɣ","Ad yeffeɣ"],["Yaɣli","Yeɣli"],["Weɣzen","Waɣzen"],["Lqadis","Lqedd-is"]],
+  eu: [["Tuɣzi","Teɣzi"],["Tufer","Teffer"],["Irugel","Irewwel"],["Wesan","Wussan"],["Webrid","Ubrid"],["Weccen","Wuccen"]],
+  ei: [["Yemdukal","Yimddukal"],["Yemdanen","Yimdanen"],["Yegawawen","Yigawawen"],["Yergazen","Yirgazen"]],
+  msNoun: [["temurt","n tmurt"],["wabrid","n ubrid"],["gemdanen","n yimdanen"],["deg ass","deg wass"],["gmawlan","deg yimawlan"],["gemkan","deg umkan"],["afeksar","ɣef ukessar"],["af awal","ɣef wawal"],["am assa","am wass-a"],["deg mis","deg yimi-s"]],
+  msRel: [["igzemren","i izemren"],["igjuhed","i ijuhden"],["ageččan","ay yeččan"],["igɛeddan","ay iɛeddan"]],
+  msD: [["Argaz ttmeṭṭut-is","Argaz d tmeṭṭut-is"],["Taqqerruyt ttqejirin","Taqqerruyt d tqejjirin"],["Netta ttwacult-is","Netta d twacult-is"],["Ttameṭṭut","D tameṭṭut"],["Ttilebḍanin","D tilebbḍanin"],["Ttaḥmayant","D taḥmayant"],["Ttalemast","D talemmast"]],
+  msAd: [["Attili","Ad tili"],["Anetturar","Ad netturar"],["Attxdem","Ad texdem"]],
+  msWord: [["tayaziṭ","tayaziḍt"],["tabburt","tawwurt"],["zzat","sdat"]],
+  tussda: [["Tafkas","Tafekka-s"],["Ucbub","Ucebbub"],["Tiwezlanin","Tiwezzlanin"],["Tiqjirin","Tiqejjirin"],["Tsenanin","Tsennanin"]],
+  tzVerb: [["Aɣidiqabel","Ad aɣ-d-iqabel"],["ḥemleghtt","ḥemmleɣ-tt"],["Atentemuqqeleḍ","Ad aten-temmuqleḍ"],["At yitiɛiwen","Ad t-iɛiwen"],["Semmanas","Semman-as"],["Yenna-s","Yenna-as"],["Tefkiḍiy-d","Tefkiḍ-iyi-d"],["Tefka-asi-d","Tefka-as-d"],["Ad iyi awiḍ","Ad iyi-d-tawiḍ"]],
+  tzNoun: [["Allaɣis","Allaɣ-is"],["Tamusnik","Tamussni-k"],["Tadukli naɣ","Tadukkli-nneɣ"],["Ismis","Isem-is"],["Yellis","Yelli-s"],["Tamaw","Tama-w"]],
+  tzPrep: [["Felli","Fell-i"],["Ɣures","Ɣur-s"],["Fella-s","Fell-as"],["Fellak","Fell-ak"]],
+  tzDem: [["Asegas agi","Aseggas-agi"],["Argaz agi","Argaz-agi"],["Tudert agi","Tudert-agi"],["Temnaṭṭ agi","Temnaḍt-agi"],["Wemkana","Umkan-a"],["Axxam nni","Axxam-nni"],["Usemmiḍ nni","Usemmiḍ-nni"]],
+  tzDir: [["Yenecded","Yenced-d"],["Ur duɣal","Ur d-tuɣal"],["Ad aẓeḍ","Ad d-taẓeḍ"],["Ad waliḍ","Ad d-twaliḍ"],["I dyaɣli","I d-yeɣli"],["Ak dqavel","Ad ak-d-tqabel"]],
+  tzNo: [["Hat-a","Ha-t-a"],["Annecta","Annect-a"],["Akagi","Akka-agi"],["Seg-yimi-s","Seg yimi-s"],["Cwiṭ-kkan","Cwiṭ kan"],["Ad-as-gen","Ad as-gen"],["d-arbib","D arbib"]],
+  adCl: [["Att yeḥrez","Ad tt-yeḥrez"],["Att xdem","Ad texdem"],["Akidar","Ad ak-d-terr"],["Ayid sefhem","Ad iyi-d-tessefhem"],["Atentetmuqqeleḍ","Ad aten-tettmuquleḍ"],["Atyiɛiwen","Ad t-iɛiwen"],["Atyagi","Ad t-yagi"],["Attaɣen","Ad tt-aɣen"]],
+  pers: [["Ad dafeḍ","Ad d-tafeḍ"],["Akdqavel","Ad ak-id-tqabel"],["Dafɣ-eḍ","Ad d-tefɣeḍ"],["Ad tt-kemleḍ","Ad tkemleḍ"],["Ad t-awḍeḍ","Ad tawḍeḍ"],["Tezri-ḍ","Teẓriḍ"],["Ad dnarni","Ad d-tennerni"],["Ara aɣ-dini","Ara aɣ-d-tini"]],
+  pret: [["Yeɛda","Iɛedda"],["Iɣli","Yeɣli"],["Ičča-t","Yečča-t"],["Yedl-itt","Idel-itt"]],
+  ussid: [["Itnejmaɛen","I ttnejmaɛen"],["Yexedem","Ixeddem"],["Turaren","Tturaren"]],
+  ttEnd: [["Tayematt","Tayemmat"],["Dunitt","Ddunit"],["Takwatt","Takwat"]],
+  amaruz: [["Am ixxamen","Am yixxamen"],["Wuxxam","Uxxam"],["Deg iɛeẓẓugen","Deg yiɛeẓẓugen"],["N iberdan","N yiberdan"],["Wemkan","Umkan"]]
+};
+
+/* ---------------- Units: rules + exercise pools ---------------- */
+const UNITS = [
+  {
+    id:"tighra", icon:"type",
+    title:{kab:"Tiɣra d tiɣri n yilem", fr:"Voyelles & le e (schwa)"},
+    rules:[
+      {k:"Deg tmaziɣt n ugafa, llant kradet n teɣra i ilan azal asnislan: a, u, i. Tiɣri n yilem [e] ur tesɛi ara azal-a: nettarra-tt deg tira kan iwakken ad tifsus tɣuri.",
+       f:"Le tamazight du nord a trois voyelles pleines : a, u, i. Le e (schwa) n'a pas de valeur phonologique : on ne l'écrit que pour faciliter la lecture.",
+       ex:["a","u","i","[e]"]},
+      {k:"Ur nettaru ara e deg taggara n wawal.",
+       f:"On n'écrit jamais e à la fin d'un mot.",
+       ex:["✗ …e"]},
+      {k:"Nettaru e deg tazwara n kra n yimyagen.",
+       f:"On écrit e au début de certains verbes.",
+       ex:["ečč","eg","els","enz"]},
+      {k:"Mi ara mseḍfarent kradet n tergalin tiḥerfiyin deg wawal, ad naru e.",
+       f:"Quand trois consonnes simples se suivent dans un mot, on insère un e.",
+       ex:["alemsir","azger","azzel"]},
+      {k:"Ɣur-k arway gar a d e: « gar » d tanzeɣt, « ger » d amyag!",
+       f:"Attention à la confusion a/e : « gar » est une préposition, « ger » est un verbe !",
+       ex:["gar (tanzeɣt)","ger (amyag)"]}
+    ],
+    pool: ()=>[
+      ...P.ae.map(pr=>exFromPair(pr)),
+      ...P.eu.map(pr=>exFromPair(pr)),
+      ...P.ei.map(pr=>exFromPair(pr)),
+      tf(true, "Nettaru e deg tazwara n kra n yimyagen: ečč, eg, els, enz.",
+               "On écrit e au début de certains verbes : ečč, eg, els, enz."),
+      tf(false,"Nezmer ad naru e deg taggara n wawal.",
+               "On peut écrire e à la fin d'un mot."),
+      pick(["azger","azgr"],0,null,
+           "Kradet n tergalin tiḥerfiyin → nettaru e.",
+           "Trois consonnes simples qui se suivent → on écrit e."),
+      pick(["gar sin yergazen","ger sin yergazen"],0,null,
+           "« gar » d tanzeɣt; « ger » d amyag.",
+           "Ici c'est la préposition « gar » (entre), pas le verbe « ger ».")
+    ]
+  },
+  {
+    id:"tamsertit", icon:"link",
+    title:{kab:"Tamsertit", fr:"L'assimilation"},
+    rules:[
+      {k:"Tamsertit tella gar wawalen deg ussiwel, maca deg tira tumrist tettwakkes i tebɣu tili: nessawal « attezwirem », nettaru « ad tezwirem ».",
+       f:"L'assimilation existe à l'oral entre les mots, mais à l'écrit usuel on la supprime toujours : on prononce « attezwirem », on écrit « ad tezwirem ».",
+       ex:["nessawal ≠ nettaru"]},
+      {k:"Tanzeɣt n + isem: nettaru n tmurt (mačči « temurt »), n ubrid, n yimdanen.",
+       f:"Préposition n + nom : on écrit n tmurt (pas « temurt »), n ubrid, n yimdanen.",
+       ex:["n tmurt","n ubrid","n yimdanen"]},
+      {k:"deg / ɣef / am + isem: deg wass, deg yimawlan, ɣef wawal, am wass-a.",
+       f:"deg / ɣef / am + nom : deg wass, deg yimawlan, ɣef wawal, am wass-a.",
+       ex:["deg wass","ɣef wawal","am wass-a"]},
+      {k:"Tanzeɣt « d » akked tzelɣa n tilawt « d » sdat wunti: D tameṭṭut, argaz d tmeṭṭut-is (mačči « ttameṭṭut »).",
+       f:"La préposition « d » et la copule « d » devant un féminin : D tameṭṭut, argaz d tmeṭṭut-is (pas « ttameṭṭut »).",
+       ex:["D tameṭṭut","d twacult-is"]},
+      {k:"Amqim amassaɣ: i izemren, ay yeččan (mačči « igzemren », « ageččan »).",
+       f:"Pronom relatif : i izemren, ay yeččan (pas « igzemren », « ageččan »).",
+       ex:["i izemren","ay yeččan"]},
+      {k:"Tamsertit deg wawal s timad-is: tifrat d tuɣalin ɣer uẓar: tayaziḍt, tawwurt, sdat (mačči tayaziṭ, tabburt, zzat).",
+       f:"Assimilation à l'intérieur du mot : la solution est de revenir à la racine : tayaziḍt, tawwurt, sdat (pas tayaziṭ, tabburt, zzat).",
+       ex:["tayaziḍt","tawwurt","sdat"]}
+    ],
+    pool: ()=>[
+      ...P.msNoun.map(pr=>exFromPair(pr)),
+      ...P.msRel.map(pr=>exFromPair(pr)),
+      ...P.msD.map(pr=>exFromPair(pr)),
+      ...P.msAd.map(pr=>exFromPair(pr)),
+      ...P.msWord.map(pr=>exFromPair(pr)),
+      tf(false,"Deg tira tumrist, nettaru tamsertit akken i tt-nessawal.",
+               "À l'écrit usuel, on note l'assimilation telle qu'on la prononce."),
+      tf(true, "Nessawal « attezwirem », maca nettaru « ad tezwirem ».",
+               "On prononce « attezwirem », mais on écrit « ad tezwirem ».")
+    ]
+  },
+  {
+    id:"tussda", icon:"repeat-2",
+    title:{kab:"Tussda", fr:"La tension (gémination)"},
+    rules:[
+      {k:"Imesli ussid yettwaru s usiknew n usekkil: tameṭṭut, tazemmurt, yerreẓ, izegger, ddu, kker.",
+       f:"Un son tendu s'écrit en doublant la lettre : tameṭṭut, tazemmurt, yerreẓ, izegger, ddu, kker.",
+       ex:["kker","ddu","tameṭṭut"]},
+      {k:"Llant snat n taggayin n tussda: tin n tnumi d tin n tjerrumt.",
+       f:"Il y a deux catégories de tension : la tension d'usage et la tension grammaticale.",
+       ex:["tanumi","tajerrumt"]},
+      {k:"Tussda tezmer ad d-tbeddel anamek n wawal!",
+       f:"La tension peut changer le sens du mot !",
+       ex:["mden ≠ medden","lqed ≠ lqedd"]}
+    ],
+    pool: ()=>[
+      ...P.tussda.map(pr=>exFromPair(pr)),
+      match([["ttaddren","bder"],["ttadren","subb"],["medden","lɣaci"],["mden","ssimɣer"]],
+        "Semlil yal awal d unamek-is (tussda tbeddel anamek!):",
+        "Associe chaque mot à son sens (la tension change le sens !) :"),
+      match([["lqedd","tiddi"],["lqed","sseḥmu"],["tameṭṭut","imesli ussid ✓"],["kker","imesli ussid ✓"]],
+        "Semlil:",
+        "Associe :"),
+      tf(true,"« medden » (lɣaci) d « mden » (ssimɣer) mgaraden s tussda.",
+              "« medden » (les gens) et « mden » (agrandir) ne diffèrent que par la tension."),
+      pick(["tiqejjirin","tiqjirin"],0,null,
+        "Imesli ussid: sin n yisekkilen.",
+        "Son tendu : on double la lettre.")
+    ]
+  },
+  {
+    id:"tufayt", icon:"zap",
+    title:{kab:"Tufayt", fr:"L'emphase"},
+    rules:[
+      {k:"Deg tmaziɣt n wassa llant kradet n tufayin n tidet: ẓ, ḍ, ṭ: aẓar, iẓi, aḍar, aḍu, iṭij, aṭṭan.",
+       f:"Le tamazight actuel a trois vraies emphatiques : ẓ, ḍ, ṭ : aẓar, iẓi, aḍar, aḍu, iṭij, aṭṭan.",
+       ex:["ẓ","ḍ","ṭ"]},
+      {k:"Tufayt tezmer ad d-tbeddel anamek n wawal: teẓriḍ (tɛelmeḍ) ≠ tezriḍ (tɛeddaḍ).",
+       f:"L'emphase peut changer le sens : teẓriḍ (tu sais) ≠ tezriḍ (tu es passé·e).",
+       ex:["teẓriḍ ≠ tezriḍ"]},
+      {k:"Isekkilen ṛ d ṣ: nettaru-ten kan mi ara ssemgirden gar wawalen deg talɣiwin-nsen tiḥerfiyin: fuṛṛ/furr, faṛes/fares, ṛbu/rbu, ṣṣif/ssif, ṣṣerr/sserr, aṣufi/asufi, ṣeyyed/seyyed. o, p, v d timerna.",
+       f:"Les lettres ṛ et ṣ ne s'écrivent que lorsqu'elles distinguent deux mots : fuṛṛ/furr, ṣṣerr/sserr… o, p, v sont des ajouts à l'alphabet de base.",
+       ex:["fuṛṛ / furr","ṣṣerr / sserr"]}
+    ],
+    pool: ()=>[
+      match([["teẓriḍ","tɛelmeḍ"],["tezriḍ","tɛeddaḍ"],["iẓerman","tafekka"],["izerman","aɣersiw"]],
+        "Semlil yal awal d unamek-is (tufayt tbeddel anamek!):",
+        "Associe chaque mot à son sens (l'emphase change le sens !) :"),
+      match([["ad terreẓ","ceqqef"],["ad t-tarez","cudd"],["aḍar","ḍ n tidet ✓"],["iṭij","ṭ n tidet ✓"]],
+        "Semlil:",
+        "Associe :"),
+      tf(true,"ẓ, ḍ, ṭ d tufayin n tidet deg tmaziɣt.",
+              "ẓ, ḍ, ṭ sont les vraies emphatiques du tamazight."),
+      tf(false,"Nettaru ṛ d ṣ anda nebɣa, ula ma ur ssemgiriden ara gar wawalen.",
+               "On écrit ṛ et ṣ où l'on veut, même sans opposition entre deux mots."),
+      pick(["iṭij","itij"],0,null,"ṭ d tufayt n tidet deg wawal-a.","ṭ est emphatique dans ce mot."),
+      pick(["aẓar (n useklu)","azar (n useklu)"],0,null,"« aẓar » s ẓ.","« aẓar » (racine) s'écrit avec ẓ.")
+    ]
+  },
+  {
+    id:"tizdit1", icon:"minus",
+    title:{kab:"Tizdit — anda ara tt-naru", fr:"Le trait d'union — où l'écrire"},
+    rules:[
+      {k:"Tizdit d allal n tira: teskan-d sin n wawalen gar-asen assaɣ; tetteqqen awal agejdan d yimezzayen-is.",
+       f:"Le trait d'union est un outil d'écriture : il relie le mot principal à ses satellites (pronoms, particules…).",
+       ex:["yenna-as","isem-is"]},
+      {k:"Gar umyag d yimqimen d tzelɣa n tnila: yenna-as, tefkiḍ-iyi-d, ḥemmleɣ-tt, ad iyi-d-tawiḍ.",
+       f:"Entre le verbe et ses pronoms / la particule d'orientation : yenna-as, tefkiḍ-iyi-d, ḥemmleɣ-tt, ad iyi-d-tawiḍ.",
+       ex:["semman-as","tefka-as-d"]},
+      {k:"Gar yisem d yiwsilen-is: isem-is, yelli-s, tamussni-k, tadukkli-nneɣ, tama-w.",
+       f:"Entre le nom et ses affixes possessifs : isem-is, yelli-s, tamussni-k, tadukkli-nneɣ, tama-w.",
+       ex:["isem-is","yelli-s"]},
+      {k:"Gar yisem d umeskan: axxam-nni, aseggas-agi, umkan-a, temnaḍt-agi.",
+       f:"Entre le nom et le démonstratif : axxam-nni, aseggas-agi, umkan-a, temnaḍt-agi.",
+       ex:["axxam-nni","umkan-a"]},
+      {k:"Gar tenzeɣt d umqim n wayla: fell-i, fell-ak, ɣur-s.",
+       f:"Entre la préposition et le pronom : fell-i, fell-ak, ɣur-s.",
+       ex:["fell-i","ɣur-s"]},
+      {k:"Tazelɣa n tnila « d » tesɛa azal — tettferriz-d anamek n tefyirt: ur d-tuɣal, i d-yeɣli, ad ak-d-tqabel.",
+       f:"La particule d'orientation « d » est importante — elle précise le sens : ur d-tuɣal, i d-yeɣli, ad ak-d-tqabel.",
+       ex:["ur d-tuɣal","i d-yeɣli"]}
+    ],
+    pool: ()=>[
+      ...P.tzVerb.map(pr=>exFromPair(pr)),
+      ...P.tzNoun.map(pr=>exFromPair(pr)),
+      ...P.tzPrep.map(pr=>exFromPair(pr)),
+      ...P.tzDem.map(pr=>exFromPair(pr)),
+      ...P.tzDir.map(pr=>exFromPair(pr))
+    ]
+  },
+  {
+    id:"tizdit2", icon:"ban",
+    title:{kab:"Tizdit — anda ur tt-nettaru & « ad »", fr:"Trait d'union interdit & la particule « ad »"},
+    rules:[
+      {k:"Ur nettaru ara tizdit gar tzelɣa n wurmir « ad » d umyag, acku yezmer ad d-yekcem wawal-nniḍen gar-asen: ad texdem (mačči « att xdem »), ad tt-yeḥrez.",
+       f:"Pas de trait d'union entre la particule « ad » et le verbe, car un autre mot peut s'insérer entre eux : ad texdem (pas « att xdem »), ad tt-yeḥrez.",
+       ex:["ad texdem","ad tt-yeḥrez"]},
+      {k:"Ur nettaru ara tizdit gar « wis » d umḍan: wis sin, wis krad.",
+       f:"Pas de trait d'union entre « wis » et le numéral : wis sin, wis krad.",
+       ex:["wis sin"]},
+      {k:"Ur nettaru ara tizdit deg yismawen uddisen: tislit n unẓar, Yusef u Qasi, Si Muḥend u Mḥend.",
+       f:"Pas de trait d'union dans les noms composés : tislit n unẓar, Yusef u Qasi, Si Muḥend u Mḥend.",
+       ex:["tislit n unẓar"]},
+      {k:"Ɣur-k: ha-t-a (mačči hat-a), annect-a, akka-agi, cwiṭ kan, d arbib, seg yimi-s, ad as-gen.",
+       f:"Attention : ha-t-a (pas hat-a), annect-a, akka-agi, cwiṭ kan, d arbib, seg yimi-s, ad as-gen.",
+       ex:["ha-t-a","cwiṭ kan","d arbib"]}
+    ],
+    pool: ()=>[
+      ...P.tzNo.map(pr=>exFromPair(pr)),
+      ...P.adCl.map(pr=>exFromPair(pr)),
+      tf(false,"Nettaru tizdit gar « ad » d umyag: « ad-texdem ».",
+               "On écrit un trait d'union entre « ad » et le verbe : « ad-texdem »."),
+      tf(true,"« wis sin » yettwaru war tizdit.",
+              "« wis sin » s'écrit sans trait d'union."),
+      pick(["Si Muḥend u Mḥend","Si-Muḥend-u-Mḥend"],0,null,
+        "Ismawen uddisen: war tizdit.",
+        "Noms composés : sans trait d'union.")
+    ]
+  },
+  {
+    id:"imataren", icon:"component",
+    title:{kab:"Imataren udmawanen & urmir ussid", fr:"Indices de personne & aoriste intensif"},
+    rules:[
+      {k:"Amatar udmawan yeskan-d anwa udem wuɣur yefti umyag: t…ḍ (kečč/kemm): ad d-tafeḍ, ad tawḍeḍ. Talɣa tamyagant = amatar + afeggag: t-urga-mt.",
+       f:"L'indice de personne marque la personne du verbe : t…ḍ (2e pers.) : ad d-tafeḍ, ad tawḍeḍ. Forme verbale = indice + radical : t-urga-mt.",
+       ex:["ad d-tafeḍ","turgamt"]},
+      {k:"Ɣur-k: amatar « t » n wudem mačči d amqim! Ad tawḍeḍ (mačči « ad t-awḍeḍ »), ad tkemleḍ (mačči « ad tt-kemleḍ »), teẓriḍ (mačči « tezri-ḍ »).",
+       f:"Attention : le « t » de personne n'est pas un pronom ! Ad tawḍeḍ (pas « ad t-awḍeḍ »), ad tkemleḍ (pas « ad tt-kemleḍ »), teẓriḍ (pas « tezri-ḍ »).",
+       ex:["ad tawḍeḍ","teẓriḍ"]},
+      {k:"Deg yizri, udem wis kraḍ: yeɣli, yečča-t, iɛedda, idel-itt.",
+       f:"Au prétérit, 3e personne : yeɣli, yečča-t, iɛedda, idel-itt.",
+       ex:["yeɣli","iɛedda"]},
+      {k:"Urmir ussid yeskan-d tigawt i d-yettuɣalen, yettkemmilen: ixeddem (mačči « yexedem »), tturaren, i ttnejmaɛen.",
+       f:"L'aoriste intensif exprime une action répétée ou continue : ixeddem (pas « yexedem »), tturaren, i ttnejmaɛen.",
+       ex:["ixeddem","tturaren"]}
+    ],
+    pool: ()=>[
+      ...P.pers.map(pr=>exFromPair(pr)),
+      ...P.pret.map(pr=>exFromPair(pr)),
+      ...P.ussid.map(pr=>exFromPair(pr)),
+      tf(false,"Deg « ad tawḍeḍ », « t » d amqim asemmad, ihi ad naru « ad t-awḍeḍ ».",
+               "Dans « ad tawḍeḍ », le « t » est un pronom complément, donc on écrit « ad t-awḍeḍ »."),
+      tf(true,"Urmir ussid yeskan-d tigawt i d-yettuɣalen yal ass.",
+              "L'aoriste intensif exprime une action qui se répète chaque jour.")
+    ]
+  },
+  {
+    id:"amaruz", icon:"tags",
+    title:{kab:"« tt » n taggara & addad amaruz", fr:"Le « tt » final & l'état d'annexion"},
+    rules:[
+      {k:"Isekkilen ţ [ts] d ž [dz] n zik: deg tira, ţ ad yuɣal tt, ž ad yuɣal zz: Ttu, Lezzayer.",
+       f:"Les anciennes affriquées ţ [ts] et ž [dz] : à l'écrit, ţ devient tt et ž devient zz : Ttu, Lezzayer.",
+       ex:["Ttu","Lezzayer"]},
+      {k:"Deg taggara n wawal, ad naru yiwen n t kan: tidet, turet, tuget, ddunit, tayemmat.",
+       f:"En fin de mot, on n'écrit qu'un seul t : tidet, turet, tuget, ddunit, tayemmat.",
+       ex:["tidet","ddunit"]},
+      {k:"Isem ɣur-s sin n waddaden: ilelli d amaruz. Yettili deg waddad amaruz ma d asemmad imsegzi deffir umyag, neɣ ma yeḍfer tanzeɣt, isem neɣ amḍan.",
+       f:"Le nom a deux états : libre et d'annexion. Il est à l'état d'annexion comme complément explicatif après le verbe, ou après une préposition, un nom ou un numéral.",
+       ex:["wass","umkan","yiberdan"]},
+      {k:"Tuget n tenzaɣ sseḍfarent addad amaruz: akked, am, d (n usdukel), ddaw, deffir, deg, gar, i, n, nnig, s (n wallal), sdat, seg, sɣur, ɣef, ɣur…",
+       f:"La plupart des prépositions entraînent l'état d'annexion : akked, am, d (de liaison), ddaw, deffir, deg, gar, i, n, nnig, s (instrumental), sdat, seg, sɣur, ɣef, ɣur…",
+       ex:["deg wass","n yiberdan"]},
+      {k:"Kra n tenzaɣ sseḍfarent addad ilelli: ar, d (n tilawt), mebla, s (n tnila), uqbel, war. Kra sseḍfarent kan amqim: fell, yes, yid.",
+       f:"Quelques prépositions gardent l'état libre : ar, d (copule), mebla, s (directionnel), uqbel, war. D'autres n'acceptent qu'un pronom : fell, yes, yid.",
+       ex:["war aman","fell-i"]},
+      {k:"Llan yismawen ur nesɛi addad amaruz: fad, laẓ, tama, tala, tara, tili, timmi, tizi, taddart… akked wuntiyen yebdan s u: tudert, tuddar, turet.",
+       f:"Certains noms n'ont pas d'état d'annexion : fad, laẓ, tama, tala, tara, tili, timmi, tizi, taddart… et les féminins commençant par u : tudert, tuddar, turet.",
+       ex:["tudert","taddart"]}
+    ],
+    pool: ()=>[
+      ...P.ttEnd.map(pr=>exFromPair(pr)),
+      ...P.amaruz.map(pr=>exFromPair(pr)),
+      pick(["Yečča wass","Yečča ass"],0,"asemmad imsegzi → addad amaruz",
+        "Asemmad imsegzi deffir umyag → addad amaruz: wass.",
+        "Complément explicatif après le verbe → état d'annexion : wass."),
+      tf(true,"« tudert » ur tesɛi ara addad amaruz.",
+              "« tudert » n'a pas d'état d'annexion."),
+      tf(false,"Deg taggara n wawal, nettaru « tt »: « tidett ».",
+               "En fin de mot, on écrit « tt » : « tidett »."),
+      tf(true,"« war » tesseḍfar addad ilelli.",
+              "« war » est suivie de l'état libre."),
+      pick(["fell-i","fell wemdan"],0,null,
+        "« fell » tesseḍfar kan amqim awsil.",
+        "« fell » n'accepte qu'un pronom affixe, jamais un nom.")
+    ]
+  },
+  {
+    id:"asigez", icon:"pen-line",
+    title:{kab:"Asigez d yisekkilen imeqqranen", fr:"Ponctuation & majuscules"},
+    rules:[
+      {k:"Asekkil ameqqran yettili deg sin n yimeḍqan kan: deg tazwara n tefyirt, akked deg tazwara n yisem n umdan neɣ n umkan: Yečča, yeswa. Boulifa, Fransa, Bgayet.",
+       f:"La majuscule n'apparaît qu'à deux endroits : au début de la phrase, et au début d'un nom propre (personne ou lieu) : Yečča, yeswa. Boulifa, Fransa, Bgayet.",
+       ex:["Yečča, yeswa.","Bgayet"]},
+      {k:"Deg waddad amaruz, d asekkil amezwaru ay d ameqqran: Tamurt n Yigawawen.",
+       f:"À l'état d'annexion, c'est la première lettre qui prend la majuscule : Tamurt n Yigawawen.",
+       ex:["Yigawawen"]},
+      {k:"Ismawen n yimukan: nettaru-ten akken ttwanṭaqen: Iɣil Ɛli (mačči Iɣil n Ɛli), Iɣil Bbammas, Tawrirt Musa, Tizi Wezzu.",
+       f:"Les noms de lieux s'écrivent comme ils se prononcent : Iɣil Ɛli (pas Iɣil n Ɛli), Iɣil Bbammas, Tawrirt Musa, Tizi Wezzu.",
+       ex:["Tizi Wezzu","Iɣil Ɛli"]},
+      {k:"Ismawen n yimdanen: akken llan ttwarun deg waddad aɣarim: Mouloud Mammeri, J.-M. Dallet. Ismawen n tmura tiberraniyin: akken ttwarun (Paris, Londres, Tokyo), anagar wid yettwamezɣen: Fransa, Lalman, Marikan, Lpari.",
+       f:"Les noms de personnes : tels qu'à l'état civil : Mouloud Mammeri, J.-M. Dallet. Les pays/villes étrangers : tels qu'ils s'écrivent (Paris, Londres, Tokyo), sauf ceux déjà amazighisés : Fransa, Lalman, Marikan, Lpari.",
+       ex:["Paris","Fransa"]},
+      {k:"Izamulen n usigez: . , ; : ? ! … ( ) « » [ ] { } / — yal azamul ɣur-s alugen n usemres; s usemres-nsen ay nferrez anamek n tefyirt: « D kecc! » ≠ « D kecc? »",
+       f:"Les signes de ponctuation : . , ; : ? ! … ( ) « » [ ] { } / — chaque signe a sa règle ; c'est grâce à eux qu'on distingue le sens : « D kecc ! » ≠ « D kecc ? »",
+       ex:[". , ; :","? ! …","« »"]}
+    ],
+    pool: ()=>[
+      pick(["Tamurt n Yigawawen","Tamurt n yigawawen","Tamurt N Yigawawen"],0,null,
+        "Deg waddad amaruz, d asekkil amezwaru ay d ameqqran.",
+        "À l'état d'annexion, la majuscule va sur la première lettre."),
+      pick(["Iɣil Ɛli","Iɣil n Ɛli"],0,null,
+        "Ismawen n yimukan: akken ttwanṭaqen.",
+        "Les toponymes s'écrivent comme ils se prononcent."),
+      pick(["Tizi Wezzu","Tizi n Wezzu"],0,null,
+        "Akken yettwanṭaq: Tizi Wezzu.",
+        "Comme prononcé : Tizi Wezzu."),
+      pick(["Tawrirt Musa","Tawrirt n Musa"],0,null,
+        "Akken yettwanṭaq.","Comme prononcé."),
+      pick(["Paris","Bari"],0,null,
+        "Ismawen iberraniyen: akken ttwarun.",
+        "Noms étrangers : tels qu'ils s'écrivent."),
+      pick(["Fransa","France"],0,null,
+        "Isem-a yettwamezɣa ya: Fransa.",
+        "Ce nom est déjà amazighisé : Fransa."),
+      tf(false,"Asekkil ameqqran yettili deg yal isem.",
+               "La majuscule s'utilise sur n'importe quel nom."),
+      tf(true,"Tafyirt tbeddu s usekkil ameqqran, tettfakka s wagaz (.).",
+              "La phrase commence par une majuscule et finit par un point (.)."),
+      tf(true,"« D kecc! » d « D kecc? » mgaraden deg unamek s usigez.",
+              "« D kecc ! » et « D kecc ? » diffèrent de sens grâce à la ponctuation.")
+    ]
+  }
+];
+
+/* ---------------- Exercise builders ---------------- */
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+
+function pick(opts, correctIdx, ctx, expK, expF){
+  return {type:"pick", opts, correct:opts[correctIdx], ctx, expK, expF};
+}
+function tf(answer, sK, sF){ return {type:"tf", answer, sK, sF}; }
+function match(pairs, pK, pF){ return {type:"match", pairs, pK, pF}; }
+function exFromPair(pr){
+  const [wrong, right] = pr;
+  const multi = right.trim().split(/\s+/).length >= 2;
+  if(multi && Math.random() < 0.45){
+    const tokens = right.trim().split(/\s+/);
+    const wtoks = wrong.trim().split(/\s+/).filter(t=>!tokens.includes(t)).slice(0,2);
+    return {type:"tiles", wrong, right, tokens, distractors:wtoks};
+  }
+  const opts = [right, wrong];
+  const stripped = right.replace(/-/g," ").replace(/\s+/g," ").trim();
+  if(stripped !== right && stripped.toLowerCase() !== wrong.toLowerCase() && Math.random() < 0.5){
+    opts.push(stripped);
+  }
+  return {type:"fix", wrong, right, opts};
+}
+
+/* ---------------- State ---------------- */
+const state = {
+  lang:"kab",
+  xp:0, hearts:4, streak:1,
+  progress:{},
+  tab:"home",
+  session:null
+};
+
+async function loadState(){
+  try{
+    const r = await window.storage.get("adw-state");
+    if(r && r.value){
+      const s = JSON.parse(r.value);
+      Object.assign(state, {lang:s.lang||"kab", xp:s.xp||0, streak:s.streak||1, progress:s.progress||{}});
+    }
+  }catch(e){ /* first run or storage unavailable */ }
+}
+async function saveState(){
+  try{
+    await window.storage.set("adw-state", JSON.stringify({
+      lang:state.lang, xp:state.xp, streak:state.streak, progress:state.progress
+    }));
+  }catch(e){ /* best effort */ }
+}
+
+const t = k => I18N[state.lang][k];
+const $  = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+/* ---------------- static shell icons ---------------- */
+function paintShell(){
+  $("hIcn").innerHTML = I("heart", true);
+  $("xIcn").innerHTML = I("star", true);
+  $("tabHomeI").innerHTML = I("home");
+  $("tabLibI").innerHTML = I("book-open");
+}
+
+/* ---------------- Language switch ---------------- */
+function setLang(l){
+  state.lang = l;
+  $("btnKab").classList.toggle("active", l==="kab");
+  $("btnFr").classList.toggle("active", l==="fr");
+  $("tabHomeL").textContent = t("tabHome");
+  $("tabLibL").textContent  = t("tabLib");
+  document.documentElement.lang = (l==="kab" ? "kab" : "fr");
+  saveState();
+  render();
+}
+
+/* ---------------- Tabs / root render ---------------- */
+function goTab(tab){ state.tab = tab; state.session = null; render(); }
+
+function setBottomMode(mode, footHTML){
+  /* mode: 'tabs' -> show nav; 'foot' -> show lesson action bar */
+  const foot = $("foot"), tabs = $("tabs");
+  if(mode === "foot"){
+    tabs.style.display = "none";
+    foot.style.display = "block";
+    foot.className = "foot";
+    if(footHTML !== undefined) $("footWrap").innerHTML = footHTML;
+  }else{
+    foot.style.display = "none";
+    tabs.style.display = "flex";
+  }
+}
+
+function render(){
+  $("statHearts").textContent = state.hearts;
+  $("statXP").textContent = state.xp;
+  $("tabHome").classList.toggle("active", state.tab==="home" && !state.session);
+  $("tabLib").classList.toggle("active", state.tab==="lib" && !state.session);
+  if(state.session){ renderStep(); }
+  else if(state.tab==="lib"){ setBottomMode("tabs"); renderLib(); }
+  else { setBottomMode("tabs"); renderHome(); }
+}
+
+/* ---------------- HOME ---------------- */
+function renderHome(){
+  let firstIncomplete = UNITS.findIndex(u=>!(state.progress[u.id]&&state.progress[u.id].done));
+  if(firstIncomplete === -1) firstIncomplete = UNITS.length;
+  const nodes = UNITS.map((u,i)=>{
+    const pr = state.progress[u.id];
+    const done = pr && pr.done;
+    const cur = i === firstIncomplete;
+    const stars = done ? "★".repeat(pr.stars)+"☆".repeat(3-pr.stars) : "";
+    return `
+      <div class="node ${done?"done":""} ${cur?"current":""}">
+        <button class="node-btn" onclick="startLesson(${i})" aria-label="${esc(u.title[state.lang])}">
+          ${I(u.icon)}
+        </button>
+        <div class="stars">${stars}</div>
+        <div class="nlabel">${i+1}. ${esc(u.title[state.lang])}</div>
+      </div>`;
+  }).join("");
+  $("main").innerHTML = `
+    <div class="hero">
+      <h1>${esc(t("heroTitle"))}</h1>
+      <p>${esc(t("heroSub"))}</p>
+      <div class="streakline">${I("flame")} ${state.streak} ${esc(t("streak"))}</div>
+    </div>
+    ${bookCard()}
+    <h2 style="font-size:1.1rem;margin-bottom:4px;color:var(--blue-dark)">${esc(t("lessons"))}</h2>
+    <div class="path">${nodes}</div>`;
+  $("main").scrollTop = 0;
+}
+
+/* ---------------- LESSON ENGINE ---------------- */
+const LESSON_SIZE = 10;
+
+function startLesson(idx){
+  const unit = UNITS[idx];
+  const pool = shuffle(unit.pool()).slice(0, LESSON_SIZE);
+  const steps = [
+    ...unit.rules.map(r=>({type:"rule", rule:r})),
+    ...pool
+  ];
+  state.session = {unitIdx:idx, steps, i:0, mistakes:0, correct:0, requeued:new Set(), practice:false};
+  state.hearts = 4;
+  render();
+}
+
+function quitLesson(){ state.session=null; state.tab="home"; render(); }
+
+function renderStep(){
+  const s = state.session;
+  if(s.i >= s.steps.length){ renderEnd(); return; }
+  const step = s.steps[s.i];
+  const pct = Math.round((s.i / s.steps.length) * 100);
+
+  let body = "";
+  if(step.type === "rule") body = ruleHTML(step.rule);
+  else if(step.type === "fix") body = fixHTML(step);
+  else if(step.type === "pick") body = pickHTML(step);
+  else if(step.type === "tf") body = tfHTML(step);
+  else if(step.type === "tiles") body = tilesHTML(step);
+  else if(step.type === "match") body = matchHTML(step);
+
+  $("main").innerHTML = `
+    <div class="lesson-top">
+      <button class="quitbtn" onclick="quitLesson()" aria-label="Quit">${I("x")}</button>
+      <div class="pbar"><div style="width:${pct}%"></div></div>
+      <div class="lesson-hearts">${s.practice ? I("graduation-cap") : I("heart", true)+" "+state.hearts}</div>
+    </div>
+    <div class="step" id="stepBox">${body}</div>`;
+  $("main").scrollTop = 0;
+
+  setBottomMode("foot",
+    step.type==="rule"
+      ? `<button class="bigbtn" onclick="advance()">${esc(t("skipRule"))}</button>`
+      : `<button class="bigbtn" id="checkBtn" disabled onclick="checkAnswer()">${esc(t("check"))}</button>`);
+
+  requestAnimationFrame(()=>{ const p=$("main").querySelector(".pbar>div"); if(p) p.style.width=pct+"%"; });
+}
+
+function ruleHTML(r){
+  const chips = (r.ex||[]).map(x=>`<span>${esc(x)}</span>`).join("");
+  return `<div class="card rulecard">
+    <span class="rtag">${I("book-marked")} ${esc(t("rule"))}</span>
+    <p class="rk">${esc(r.k)}</p>
+    ${state.lang==="fr" ? `<p class="rf">${esc(r.f)}</p>` : ""}
+    <div class="exchips">${chips}</div>
+  </div>`;
+}
+
+/* --- fix / pick --- */
+let sel = null;
+function fixHTML(step){
+  sel = null;
+  step._shuffled = shuffle(step.opts);
+  const opts = step._shuffled.map((o,i)=>`<button class="opt" data-i="${i}" data-v="${esc(o)}" onclick="selectOpt(this)">${esc(o)}</button>`).join("");
+  return `<p class="prompt">${esc(t("fixThis"))}</p>
+    <div><span class="wrongword">${esc(step.wrong)}</span></div>
+    <div class="opts">${opts}</div>`;
+}
+function pickHTML(step){
+  sel = null;
+  step._shuffled = shuffle(step.opts);
+  const opts = step._shuffled.map((o,i)=>`<button class="opt" data-i="${i}" data-v="${esc(o)}" onclick="selectOpt(this)">${esc(o)}</button>`).join("");
+  return `<p class="prompt">${esc(t("pickCorrect"))}</p>
+    ${step.ctx?`<p class="ctxnote">${esc(step.ctx)}</p>`:""}
+    <div class="opts">${opts}</div>`;
+}
+function selectOpt(btn){
+  document.querySelectorAll(".opt").forEach(o=>o.classList.remove("sel"));
+  btn.classList.add("sel");
+  sel = parseInt(btn.dataset.i,10);
+  const cb = $("checkBtn"); if(cb) cb.disabled = false;
+}
+
+/* --- true / false --- */
+function tfHTML(step){
+  sel = null;
+  const stmt = state.lang==="fr" ? step.sF : step.sK;
+  return `<p class="prompt">${esc(t("tfQ"))}</p>
+    <div class="card"><p style="font-weight:600;font-size:1.02rem">${esc(stmt)}</p></div>
+    <div class="opts tf">
+      <button class="opt" data-i="1" onclick="selectOpt(this)"><span class="tficn-true">${I("check")}</span> ${esc(t("tTrue"))}</button>
+      <button class="opt" data-i="0" onclick="selectOpt(this)"><span class="tficn-false">${I("x")}</span> ${esc(t("tFalse"))}</button>
+    </div>`;
+}
+
+/* --- tiles (word bank) --- */
+let tileState = null;
+function tilesHTML(step){
+  const bank = shuffle([...step.tokens, ...step.distractors]);
+  tileState = {picked:[], bank};
+  const tiles = bank.map((tk,i)=>`<button class="tile" data-i="${i}" onclick="pickTile(this)">${esc(tk)}</button>`).join("");
+  return `<p class="prompt">${esc(t("buildIt"))}</p>
+    <div><span class="wrongword">${esc(step.wrong)}</span></div>
+    <div class="answer-zone" id="azone"></div>
+    <div class="bank" id="bank">${tiles}</div>`;
+}
+function pickTile(btn){
+  const i = parseInt(btn.dataset.i,10);
+  btn.classList.add("used");
+  tileState.picked.push({i, w:tileState.bank[i]});
+  redrawZone();
+}
+function unpickTile(pos){
+  const it = tileState.picked.splice(pos,1)[0];
+  const orig = document.querySelector(`#bank .tile[data-i="${it.i}"]`);
+  if(orig) orig.classList.remove("used");
+  redrawZone();
+}
+function redrawZone(){
+  $("azone").innerHTML = tileState.picked.map((p,idx)=>
+    `<button class="tile" onclick="unpickTile(${idx})">${esc(p.w)}</button>`).join("");
+  const cb = $("checkBtn"); if(cb) cb.disabled = tileState.picked.length===0;
+}
+
+/* --- matching --- */
+let matchState = null;
+function matchHTML(step){
+  const lefts = shuffle(step.pairs.map(p=>p[0]));
+  const rights = shuffle(step.pairs.map(p=>p[1]));
+  matchState = {pairs:step.pairs, selL:null, selR:null, locked:0, erred:false};
+  const cells = [];
+  for(let i=0;i<lefts.length;i++){
+    cells.push(`<button class="mitem" data-side="L" data-v="${esc(lefts[i])}" onclick="tapMatch(this)">${esc(lefts[i])}</button>`);
+    cells.push(`<button class="mitem" data-side="R" data-v="${esc(rights[i])}" onclick="tapMatch(this)">${esc(rights[i])}</button>`);
+  }
+  const prompt = state.lang==="fr" ? step.pF : step.pK;
+  return `<p class="prompt">${esc(prompt)}</p><div class="matchgrid">${cells.join("")}</div>`;
+}
+function tapMatch(btn){
+  const side = btn.dataset.side;
+  document.querySelectorAll(`.mitem[data-side="${side}"]`).forEach(m=>m.classList.remove("sel"));
+  btn.classList.add("sel");
+  if(side==="L") matchState.selL = btn; else matchState.selR = btn;
+  if(matchState.selL && matchState.selR){
+    const l = matchState.selL.dataset.v, r = matchState.selR.dataset.v;
+    const good = matchState.pairs.some(p=>p[0]===l && p[1]===r);
+    if(good){
+      matchState.selL.classList.remove("sel"); matchState.selR.classList.remove("sel");
+      matchState.selL.classList.add("lock");   matchState.selR.classList.add("lock");
+      matchState.locked++;
+      if(matchState.locked === matchState.pairs.length){
+        finishStep(!matchState.erred, null);
+      }
+    }else{
+      const L=matchState.selL, R=matchState.selR;
+      L.classList.add("err"); R.classList.add("err");
+      if(!matchState.erred){ matchState.erred = true; loseHeart(); }
+      $("stepBox").classList.add("shake");
+      setTimeout(()=>{
+        L.classList.remove("err","sel"); R.classList.remove("err","sel");
+        const sb=$("stepBox"); if(sb) sb.classList.remove("shake");
+      }, 450);
+    }
+    matchState.selL = null; matchState.selR = null;
+  }
+}
+
+/* --- answer checking --- */
+function checkAnswer(){
+  const step = state.session.steps[state.session.i];
+  let good = false, fixText = "", exp = "";
+
+  if(step.type==="fix"){
+    good = step._shuffled[sel] === step.right;
+    fixText = step.right;
+  }else if(step.type==="pick"){
+    good = step._shuffled[sel] === step.correct;
+    fixText = step.correct;
+    exp = state.lang==="fr" ? (step.expF||"") : (step.expK||"");
+  }else if(step.type==="tf"){
+    good = (sel===1) === step.answer;
+    fixText = step.answer ? t("tTrue") : t("tFalse");
+  }else if(step.type==="tiles"){
+    const built = tileState.picked.map(p=>p.w).join(" ");
+    good = built === step.tokens.join(" ");
+    fixText = step.right;
+  }
+  finishStep(good, fixText, exp);
+}
+
+function finishStep(good, fixText, exp){
+  const s = state.session;
+  const step = s.steps[s.i];
+  document.querySelectorAll(".opt").forEach(o=>{
+    o.style.pointerEvents="none";
+    const v = o.dataset.v;
+    if(step.type==="fix" && v===step.right) o.classList.add("good");
+    if(step.type==="pick" && v===step.correct) o.classList.add("good");
+    if(o.classList.contains("sel") && !good) o.classList.add("bad");
+  });
+  const foot = $("foot"), wrap = $("footWrap");
+  if(good){
+    s.correct++;
+    state.xp += 10;
+    foot.classList.add("ok");
+    wrap.innerHTML = `
+      <div class="fb-title">${I("circle-check")} ${esc(Math.random()<.5?t("ok"):t("okAlt"))} +10</div>
+      ${exp?`<div class="fb-body">${esc(exp)}</div>`:""}
+      <button class="bigbtn" onclick="advance()">${esc(t("cont"))} ${I("arrow-right")}</button>`;
+  }else{
+    s.mistakes++;
+    loseHeart();
+    $("stepBox").classList.add("shake");
+    foot.classList.add("ko");
+    wrap.innerHTML = `
+      <div class="fb-title">${I("circle-x")} ${esc(t("ko"))}</div>
+      <div class="fb-body">${fixText?`${esc(t("theFix"))} <b>${esc(fixText)}</b>`:""}${exp?`<br>${esc(exp)}`:""}</div>
+      <button class="bigbtn redb" onclick="advance()">${esc(t("cont"))} ${I("arrow-right")}</button>`;
+    if(!s.requeued.has(step)){
+      s.requeued.add(step);
+      const copy = Object.assign({}, step);
+      delete copy._shuffled;
+      s.steps.push(copy);
+    }
+  }
+  $("statXP").textContent = state.xp;
+  saveState();
+}
+
+function loseHeart(){
+  const s = state.session;
+  if(s.practice) return;
+  state.hearts = Math.max(0, state.hearts-1);
+  $("statHearts").textContent = state.hearts;
+  const lh = document.querySelector(".lesson-hearts");
+  if(lh){ lh.innerHTML = I("heart", true)+" "+state.hearts; }
+  if(state.hearts===0) showHeartsModal();
+}
+function showHeartsModal(){
+  const d = document.createElement("div");
+  d.className="modal-bg"; d.id="hmodal";
+  d.innerHTML = `<div class="modal">
+    <div class="bigicn">${I("heart-crack")}</div>
+    <h3>${esc(t("heartsOut"))}</h3>
+    <p>${esc(t("heartsOutMsg"))}</p>
+    <button class="bigbtn" style="margin-bottom:8px" onclick="practiceOn()">${esc(t("keepGoing"))}</button>
+    <button class="bigbtn ghost" onclick="restartLesson()">${esc(t("restart"))}</button>
+  </div>`;
+  document.body.appendChild(d);
+}
+function practiceOn(){
+  state.session.practice = true;
+  const m=$("hmodal"); if(m) m.remove();
+  const lh = document.querySelector(".lesson-hearts");
+  if(lh){ lh.innerHTML = I("graduation-cap"); }
+}
+function restartLesson(){
+  const m=$("hmodal"); if(m) m.remove();
+  startLesson(state.session.unitIdx);
+}
+
+function advance(){
+  state.session.i++;
+  render();
+}
+
+/* ---------------- END SCREEN ---------------- */
+function renderEnd(){
+  const s = state.session;
+  const unit = UNITS[s.unitIdx];
+  const stars = s.mistakes===0 ? 3 : (s.mistakes<=2 ? 2 : 1);
+  const prev = state.progress[unit.id];
+  state.progress[unit.id] = {done:true, stars: Math.max(stars, prev?prev.stars:0)};
+  state.session = null;
+  saveState();
+  confetti();
+  $("main").innerHTML = `
+    <div class="endscreen">
+      <svg class="mascot" viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="62" r="50" fill="#FEF7E0" stroke="#FBBC05" stroke-width="4"/>
+        <path d="M60 26 L38 44 M60 26 L82 44 M60 26 L60 72 M38 92 L60 72 L82 92 M30 60 L90 60" stroke="#EA4335" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <circle cx="47" cy="40" r="5" fill="#202124"/><circle cx="73" cy="40" r="5" fill="#202124"/>
+        <path d="M50 98 Q60 106 70 98" stroke="#202124" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </svg>
+      <h2>${esc(t("lessonDone"))}</h2>
+      <div style="font-weight:700;color:var(--ink-soft)">${esc(unit.title[state.lang])}</div>
+      <div class="endstars">${"★".repeat(stars)}${"☆".repeat(3-stars)}</div>
+      <div class="endstats">
+        <div class="pill">+${s.correct*10}<small>${esc(t("xpEarned"))}</small></div>
+        <div class="pill">${s.mistakes}<small>${esc(t("mistakes"))}</small></div>
+      </div>
+      <button class="bigbtn" onclick="quitLesson()">${esc(t("backHome"))}</button>
+    </div>`;
+  $("main").scrollTop = 0;
+  setBottomMode("tabs");
+}
+
+function confetti(){
+  const colors=["#4285F4","#EA4335","#FBBC05","#34A853"];
+  for(let i=0;i<60;i++){
+    const c=document.createElement("div");
+    c.className="cf";
+    c.style.left=Math.random()*100+"vw";
+    c.style.background=colors[i%colors.length];
+    c.style.animationDuration=(2+Math.random()*2)+"s";
+    c.style.animationDelay=(Math.random()*0.6)+"s";
+    c.style.transform=`rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 5000);
+  }
+}
+
+/* ---------------- LIBRARY ---------------- */
+const ALPHABET = [
+  ["a, A","a, aɣra","aman, azal"],["b, B","ba","bibb, baba"],["c, C","ca","aclim, uccen"],
+  ["č, Č","yeč","učči, aberčečču"],["d, D","da","dadda, udi"],["ḍ, Ḍ","ḍar","aḍar, ablaḍ, aḍu"],
+  ["e, E","ilem, tiɣri n yilem","izem, ales"],["f, F","fa","afus, tuffra, ilef"],["g, G","ga","targa, agu"],
+  ["ǧ, Ǧ","yeǧ","tiǧǧin, taǧǧewt"],["h, H","ha","awelleh, ahicur"],["ḥ, Ḥ","ḥim","aḥallum, aḥlalas"],
+  ["i, I","i, iɣri","itri, izi, imi"],["j, J","ja","ajlal, tiji, inijel"],["k, K","ka","ayefki, akal"],
+  ["l, L","la","alim, tallumt"],["m, M","ma","imir, aman"],["n, N","na","inigi, aslen, ini"],
+  ["ɣ, Γ","ɣar","iɣil, aɣrum, taleɣt"],["q, Q","qil","aqadus, abquq"],["r, R","ra (rar)","amrar, rwu"],
+  ["s, S","sa (sar)","agusim, subb"],["t, T","ta","ntu, tawla, tatut"],["ṭ, Ṭ","ṭar","aṭas, iṭij, imeṭṭi"],
+  ["u, U","u, uɣru","ul, ulmu, usu"],["w, W","wa","awal, acwir"],["x, X","xa","axxam, axelxal"],
+  ["y, Y","ya","aylew, ayyur"],["z, Z","za","uzzal, izem, annuz"],["ẓ, Ẓ","ẓar","iẓi, aẓar, laẓ"],
+  ["ɛ, Ɛ","ɛil","aɛlaw, aɛrur"]
+];
+const GLOSSARY = [
+  ["Tuccḍiwin","Fautes"],["Aseɣti","Correction"],["Alugen","Règle"],["Tizdit","Trait d'union"],
+  ["Tamsertit","Assimilation"],["Tussda","Tension"],["Tufayt","Emphase"],["Tiɣra","Voyelles"],
+  ["Tirgalin","Consonnes"],["Imataren udmawanen","Indices personnels"],["Tazelɣa","Particule"],
+  ["Urmir","Aoriste"],["Addad amaruz","État d'annexion"],["Tanzeɣt","Préposition"],
+  ["Amqim","Pronom"],["Awsil","Affixe"],["Asigez","Ponctuation"],["Agemmay","Alphabet"],
+  ["Tirawalt","Orthographe"],["Amedya","Exemple"],["Tanila","Direction"],["Afeggag","Radical"],
+  ["Tiɣri n yilem","Schwa (voyelle vide)"],["Uẓar","Racine"]
+];
+const SOURCES = [
+  "Aslugen n tira n tmaziɣt — HCA, 2012",
+  "Ilugan n tira n tmaziɣt — K. Bouamara, B. Hamek, M.-L. Mahrouche, Z. Meksem, A. Rabehi, M. Tidjet, 2009",
+  "Tajerrumt n tmaziɣt (tantala taqbaylit) — M. Mammeri, 1976",
+  "Tajerrumt tatrart n teqbaylit — K. Naït-Zerrad, 2001",
+  "Amyag di tmaziɣt — K. Naït-Zerrad, 1994",
+  "Propositions pour la notation usuelle à base latine du berbère — S. Chaker, 1996–2001",
+  "Anagraw n yisem — A. Rabehi, 2011",
+  "Tasleḍt i tuccḍiwin n usigez d tira — K. Uzwir & S. Almandunas, 2016",
+  "L'enseignement de la notation au DLCA — M. Sabri, 2017",
+  "Amawal n tusnakt — Tafsut, 1984 · Amawal n tsenselkimt — S. Saad Buzefran, 1996"
+];
+
+function pairTable(pairs){
+  return `<table class="reft"><tr><th>${esc(t("errCol"))}</th><th>${esc(t("fixCol"))}</th></tr>
+    ${pairs.map(p=>`<tr><td class="w">${esc(p[0])}</td><td class="r">${esc(p[1])}</td></tr>`).join("")}
+  </table>`;
+}
+function rulesBlock(unit){
+  return unit.rules.map(r=>`<div class="rline">
+    <p class="rk">${esc(r.k)}</p>
+    ${state.lang==="fr"?`<p class="rf">${esc(r.f)}</p>`:""}
+  </div>`).join("");
+}
+
+const PDF_FILE = "ad-arugh-war-tuccdiwin.pdf";
+const CONTACT_EMAIL = "contact@anzart.me";
+
+function bookCard(){
+  return `<div class="bookcard">
+    <span class="bicn">${I("book")}</span>
+    <div class="btxt"><b>${esc(t("getBook"))}</b><span>${esc(t("getBookSub"))}</span></div>
+    <a class="dl-btn" href="${PDF_FILE}" download>${I("download")}<span>${esc(t("download"))}</span></a>
+  </div>`;
+}
+
+function contactCard(){
+  return `<div class="contactcard">
+    <h3>${I("mail")}${esc(t("contact"))}</h3>
+    <p>${esc(t("contactSub"))}</p>
+    <a class="mail" href="mailto:${CONTACT_EMAIL}">${I("mail")}${CONTACT_EMAIL}</a>
+  </div>`;
+}
+
+function renderLib(){
+  const secs = UNITS.map((u,i)=>{
+    let tables = "";
+    if(u.id==="tighra") tables = pairTable([...P.ae, ...P.eu, ...P.ei]);
+    if(u.id==="tamsertit") tables = pairTable([...P.msNoun,...P.msRel,...P.msD,...P.msAd,...P.msWord]);
+    if(u.id==="tussda") tables = pairTable(P.tussda);
+    if(u.id==="tizdit1") tables = pairTable([...P.tzVerb,...P.tzNoun,...P.tzPrep,...P.tzDem,...P.tzDir]);
+    if(u.id==="tizdit2") tables = pairTable([...P.tzNo,...P.adCl]);
+    if(u.id==="imataren") tables = pairTable([...P.pers,...P.pret,...P.ussid]);
+    if(u.id==="amaruz") tables = pairTable([...P.ttEnd,...P.amaruz]);
+    return `<details ${i===0?"open":""}>
+      <summary><span class="sicn">${I(u.icon)}</span>${i+1}. ${esc(u.title[state.lang])}</summary>
+      <div class="dbody">${rulesBlock(u)}${tables}</div>
+    </details>`;
+  }).join("");
+
+  const alpha = `<details>
+    <summary><span class="sicn">${I("spell-check")}</span>${esc(t("alphabet"))} — Agemmay</summary>
+    <div class="dbody">
+      <table class="reft"><tr><th>${esc(t("letter"))}</th><th>${esc(t("lname"))}</th><th>${esc(t("lex"))}</th></tr>
+      ${ALPHABET.map(a=>`<tr><td class="r">${esc(a[0])}</td><td>${esc(a[1])}</td><td>${esc(a[2])}</td></tr>`).join("")}
+      </table>
+      <div class="rline"><p class="rk">Isekkilen-nniḍen — ṛ, ṣ, o, p, v — d timerna ɣef wid n ugemmay unnim.</p>
+      ${state.lang==="fr"?`<p class="rf">Les lettres ṛ, ṣ, o, p, v sont des ajouts à l'alphabet de base.</p>`:""}</div>
+    </div>
+  </details>`;
+
+  const punct = `<details>
+    <summary><span class="sicn">${I("quote")}</span>Asigez — izamulen</summary>
+    <div class="dbody">
+      <div class="symrow">
+        <span>.</span><span>,</span><span>;</span><span>:</span><span>?</span><span>!</span><span>…</span>
+        <span>( )</span><span>« »</span><span>[ ]</span><span>{ }</span><span>/</span><span>&gt;</span><span>&lt;</span>
+        <span><u>abc</u></span><span><i>abc</i></span><span><b>abc</b></span>
+      </div>
+      <div class="rline"><p class="rk">Amedya: « D kecc! » ≠ « D kecc. » ≠ « D kecc? » — s usigez ay nferrez anamek n tefyirt.</p>
+      ${state.lang==="fr"?`<p class="rf">Exemple : « D kecc ! » ≠ « D kecc. » ≠ « D kecc ? » — la ponctuation distingue le sens de la phrase.</p>`:""}</div>
+    </div>
+  </details>`;
+
+  const gloss = `<details>
+    <summary><span class="sicn">${I("languages")}</span>${esc(t("glossary"))} — Tamawalt</summary>
+    <div class="dbody">
+      <table class="reft"><tr><th>Tamaziɣt</th><th>Tafransist</th></tr>
+      ${GLOSSARY.map(g=>`<tr><td class="r">${esc(g[0])}</td><td>${esc(g[1])}</td></tr>`).join("")}
+      </table>
+    </div>
+  </details>`;
+
+  const srcs = `<details>
+    <summary><span class="sicn">${I("library")}</span>${esc(t("sources"))} — Tiɣbula</summary>
+    <div class="dbody">${SOURCES.map(x=>`<div class="rline"><p class="rk" style="font-weight:500;font-size:.88rem">${esc(x)}</p></div>`).join("")}</div>
+  </details>`;
+
+  $("main").innerHTML = `<div class="lib">
+    <h2 style="margin-top:2px">${esc(t("libTitle"))}</h2>
+    <p style="color:var(--ink-soft);font-size:.9rem;margin-bottom:13px">${esc(t("libSub"))}</p>
+    ${bookCard()}
+    ${secs}${alpha}${punct}${gloss}${srcs}
+    ${contactCard()}
+  </div>`;
+  $("main").scrollTop = 0;
+}
+
+/* ---------------- boot ---------------- */
+(async function(){
+  paintShell();
+  await loadState();
+  setLang(state.lang);
+})();
+</script>
+</body>
+</html>

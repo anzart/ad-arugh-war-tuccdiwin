@@ -1,22 +1,26 @@
 # Ad aruɣ war tuccḍiwin — ⵣ
 
-Application web interactive pour apprendre à écrire le **kabyle (taqbaylit)** sans fautes,
-inspirée du livret *« Ad aruɣ war tuccḍiwin »*.
+Interactive web app to learn how to write **Kabyle (Taqbaylit)** without mistakes,
+inspired by the booklet *"Ad aruɣ war tuccḍiwin"*.
 
-- 🎮 Leçons interactives (règles d'orthographe, exercices, quiz)
-- 📖 Bibliothèque de règles, alphabet, ponctuation, lexique
-- 📄 Téléchargement du livre au format PDF
-- 🌍 Bilingue : Taqbaylit (kab) / Français (fr)
+🌍 **Live site:** https://anzart.github.io/ad-arugh-war-tuccdiwin/
 
-## Utilisation
+## Features
 
-Site statique — un seul fichier `index.html`, sans dépendance externe.
-Ouvrez `index.html` dans un navigateur, ou consultez la version publiée sur GitHub Pages.
+- 🎮 Interactive lessons (spelling rules, exercises, quizzes)
+- 📖 Reference library: rules, alphabet, punctuation, glossary
+- 📄 Download the book as a PDF
+- 🌍 Bilingual: Taqbaylit (kab) / French (fr)
+
+## Usage
+
+Static site — a single `index.html` file with no external dependencies.
+Open `index.html` in a browser, or visit the [live site](https://anzart.github.io/ad-arugh-war-tuccdiwin/).
 
 ## Contact
 
 📧 [contact@anzart.me](mailto:contact@anzart.me)
 
-## Licence
+## License
 
-Adlis d ilelli — livre et application libres.
+Released under the [MIT License](LICENSE).

@@ -40,6 +40,13 @@
   --green:#34A853;  --green-dark:#188038; --green-soft:#E6F4EA;
   --yellow:#FBBC05; --yellow-dark:#F29900;--yellow-soft:#FEF7E0;
   --red:#EA4335;    --red-dark:#C5221F;   --red-soft:#FCE8E6;
+  /* statut réponse (couleurs Duolingo) */
+  --ok:#58A700;         /* rgb(88,167,0)   vert bord/texte */
+  --ok-soft:#D7FFB8;    /* rgb(215,255,184) fond vert */
+  --ok-bright:#58CC02;  /* vert bouton */
+  --ko:#EA2B2B;         /* rgb(234,43,43)  rouge bord/texte */
+  --ko-strong:#FF4B4B;  /* rgb(255,75,75)  fond bouton rouge */
+  --ko-soft:#FFE0E1;    /* fond rouge clair */
   --radius:16px;
   --shadow:0 1px 3px rgba(60,64,67,.18), 0 1px 2px rgba(60,64,67,.1);
   --font-display:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -120,16 +127,16 @@ nav.tabs .ticn svg.lic{width:1.35rem;height:1.35rem}
   padding:12px 14px;
   transition:background .2s;
 }
-.foot.ok{background:var(--green-soft)}
-.foot.ko{background:var(--red-soft)}
+.foot.ok{background:var(--ok-soft)}
+.foot.ko{background:var(--ko-soft)}
 .fb-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .fb-icn{width:46px;height:46px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:#fff}
-.fb-icn.ok{color:var(--green-dark)}
-.fb-icn.ko{color:var(--red-dark)}
+.fb-icn.ok{color:var(--ok)}
+.fb-icn.ko{color:var(--ko)}
 .fb-icn svg.lic{width:1.7rem;height:1.7rem;stroke-width:3}
 .fb-title{font-family:var(--font-display);font-weight:800;font-size:1.05rem;display:flex;align-items:center;gap:6px}
-.foot.ok .fb-title{color:var(--green-dark)}
-.foot.ko .fb-title{color:var(--red-dark)}
+.foot.ok .fb-title{color:var(--ok)}
+.foot.ko .fb-title{color:var(--ko)}
 .fb-body{font-size:.9rem;margin-top:2px}
 .fb-body b{font-size:1rem}
 .foot-row{display:flex;gap:10px;align-items:stretch}
@@ -139,13 +146,13 @@ nav.tabs .ticn svg.lic{width:1.35rem;height:1.35rem}
 .bigbtn{
   display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
   background:var(--green);color:#fff;font-family:var(--font-display);font-weight:700;
-  font-size:1rem;border-radius:14px;padding:12px;box-shadow:0 3px 0 var(--green-dark);
-  transition:transform .1s;letter-spacing:.3px;
+  font-size:1rem;border-radius:14px;padding:13px;box-shadow:0 4px 0 var(--ok);
+  transition:transform .1s;letter-spacing:.5px;background:var(--ok-bright);
 }
-.bigbtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--green-dark)}
-.bigbtn:disabled{background:#F1F3F4;box-shadow:0 3px 0 var(--border);color:#9AA0A6}
-.bigbtn.redb{background:var(--red);box-shadow:0 3px 0 var(--red-dark)}
-.bigbtn.redb:active{box-shadow:0 1px 0 var(--red-dark)}
+.bigbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ok)}
+.bigbtn:disabled{background:#E5E5E5;box-shadow:0 4px 0 #C6C6C6;color:#AFAFAF}
+.bigbtn.redb{background:var(--ko-strong);box-shadow:0 4px 0 var(--ko)}
+.bigbtn.redb:active{box-shadow:0 1px 0 var(--ko)}
 .bigbtn.ghost{background:#fff;color:var(--blue-dark);border:2px solid var(--blue);box-shadow:0 3px 0 var(--blue-soft)}
 .bigbtn.blueb{background:var(--blue);box-shadow:0 3px 0 var(--blue-dark)}
 .bigbtn.blueb:active{box-shadow:0 1px 0 var(--blue-dark)}
@@ -337,10 +344,10 @@ nav.tabs .ticn svg.lic{width:1.35rem;height:1.35rem}
 .opt:active{transform:translateY(1px)}
 .opt.sel{border-color:var(--blue);background:var(--blue-soft);color:var(--blue-dark)}
 .opt.sel .opt-num{border-color:var(--blue);color:var(--blue-dark)}
-.opt.good{border-color:var(--green);background:var(--green-soft);color:var(--green-dark)}
-.opt.good .opt-num{border-color:var(--green);color:var(--green-dark)}
-.opt.bad{border-color:var(--red);background:var(--red-soft);color:var(--red-dark)}
-.opt.bad .opt-num{border-color:var(--red);color:var(--red-dark)}
+.opt.good{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.opt.good .opt-num{border-color:var(--ok);color:var(--ok)}
+.opt.bad{border-color:var(--ko);background:var(--ko-soft);color:var(--ko)}
+.opt.bad .opt-num{border-color:var(--ko);color:var(--ko)}
 .opts.tf{flex-direction:row}
 .opts.tf .opt{flex:1;padding:14px 12px;gap:6px}
 .opt .tficn-true{color:var(--green-dark);display:flex}
@@ -418,6 +425,10 @@ table.reft td.r{color:var(--green-dark);font-weight:700}
 
 /* pendant une leçon : masquer le header global (comme Duolingo) */
 #app.in-lesson>header{display:none}
+/* centrer la question verticalement (et horizontalement) dans l'espace libre */
+#app.in-lesson main{display:flex;flex-direction:column}
+#app.in-lesson .lesson-top{flex:none;width:100%}
+#app.in-lesson .step{width:100%;margin-top:auto;margin-bottom:auto}
 
 /* ============ DESKTOP: full-bleed backgrounds, ~800px centered content ============ */
 @media (min-width:900px){

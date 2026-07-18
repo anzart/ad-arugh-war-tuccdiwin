@@ -1,11 +1,12 @@
 /* Service worker — Ad aruɣ war tuccḍiwin
    App shell entièrement hors-ligne (fichier unique, sans dépendance externe). */
-const CACHE = "ad-arugh-v1";
+const CACHE = "ad-arugh-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./ad-arugh-war-tuccdiwin.pdf",
+  "./fonts/InterVariable.woff2",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-512.png",

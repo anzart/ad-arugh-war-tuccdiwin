@@ -16,6 +16,15 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <style>
+/* Inter (Google font, OFL) — self-hosted variable font, works offline.
+   Couvre tous les diacritiques du kabyle (ɣ ḍ ṣ ẓ ḥ ɛ č ǧ …). */
+@font-face{
+  font-family:'Inter';
+  font-style:normal;
+  font-weight:100 900;
+  font-display:swap;
+  src:url('fonts/InterVariable.woff2') format('woff2');
+}
 /* ============================================================
    DESIGN TOKENS — white background, Google palette
    Mobile-first: full-height flex shell, bottom bars in-flow
@@ -33,8 +42,8 @@
   --red:#EA4335;    --red-dark:#C5221F;   --red-soft:#FCE8E6;
   --radius:16px;
   --shadow:0 1px 3px rgba(60,64,67,.18), 0 1px 2px rgba(60,64,67,.1);
-  --font-display:'Google Sans','Product Sans',ui-rounded,'Baloo 2',system-ui,sans-serif;
-  --font-body:Roboto,'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-display:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{height:100%}
@@ -178,33 +187,90 @@ nav.tabs .ticn svg.lic{width:1.35rem;height:1.35rem}
 .hero p{font-size:.88rem;opacity:.95;max-width:36ch}
 .hero .streakline{margin-top:9px;display:inline-flex;gap:6px;align-items:center;background:rgba(255,255,255,.18);padding:4px 11px;border-radius:999px;font-weight:700;font-size:.82rem}
 
-.path{position:relative;display:flex;flex-direction:column;align-items:center;gap:30px;padding:8px 0 24px}
-.path::before{
-  content:"";position:absolute;top:20px;bottom:20px;width:6px;border-radius:3px;
-  background:repeating-linear-gradient(var(--border) 0 12px, transparent 12px 24px);
+/* ---- unit header (Duolingo-style colored banner) ---- */
+.unit-header{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:var(--blue);color:#fff;border-radius:16px;padding:12px 16px;
+  margin-bottom:26px;box-shadow:0 4px 0 var(--blue-dark);
 }
-.node{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;width:190px;max-width:60vw}
-.node:nth-child(odd){transform:translateX(-44px)}
-.node:nth-child(even){transform:translateX(44px)}
-.node-btn{
-  width:78px;height:78px;border-radius:50%;position:relative;
+.unit-header .uh-sub{font-size:.7rem;font-weight:800;opacity:.9;text-transform:uppercase;letter-spacing:.07em}
+.unit-header .uh-title{font-size:1.06rem;font-weight:800;font-family:var(--font-display);margin-top:1px}
+.unit-header .uh-guide{
+  width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.18);flex:none;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  border:1px solid rgba(255,255,255,.4);
+}
+.unit-header .uh-guide svg.lic{width:1.45rem;height:1.45rem}
+
+/* ---- winding lesson path ---- */
+.path{position:relative;display:flex;flex-direction:column;align-items:center;padding:6px 0 30px}
+.lnode{position:relative;display:flex;flex-direction:column;align-items:center;margin-bottom:24px}
+.lnode.current{margin-top:34px}
+.lnode-top{position:relative;display:flex;align-items:center;justify-content:center;width:74px;height:74px}
+.lnode .ring{position:absolute;inset:-9px;width:92px;height:92px;pointer-events:none}
+
+/* 3D "pushable" button */
+.lnode-btn{
+  width:74px;height:74px;border-radius:50%;position:relative;z-index:1;
   display:flex;align-items:center;justify-content:center;
-  background:#fff;border:3px solid var(--border);color:var(--ink-soft);
-  box-shadow:var(--shadow);
-  transition:transform .15s;
+  border:none;color:#fff;background:var(--blue);
+  box-shadow:0 8px 0 var(--blue-dark);
+  transition:transform .09s ease, box-shadow .09s ease;
+  cursor:pointer;
 }
-.node-btn svg.lic{width:1.9rem;height:1.9rem}
-.node-btn:active{transform:scale(.95)}
-.node.done .node-btn{background:var(--yellow);border-color:var(--yellow-dark);color:#fff}
-.node.current .node-btn{background:var(--blue);border-color:var(--blue-dark);color:#fff;animation:pulse 1.8s infinite}
-.node .stars{font-size:.82rem;letter-spacing:2px;color:var(--yellow-dark);height:1em}
-.node .nlabel{font-weight:700;font-size:.8rem;text-align:center;color:var(--ink);background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:3px 9px}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-@media (max-width:400px){
-  .node:nth-child(odd){transform:translateX(-30px)}
-  .node:nth-child(even){transform:translateX(30px)}
-  .node-btn{width:70px;height:70px}
+.lnode-btn svg.lic{width:2rem;height:2rem;stroke-width:2.6}
+.lnode-btn:active{transform:translateY(5px);box-shadow:0 3px 0 var(--blue-dark)}
+
+/* leçon terminée -> dorée */
+.lnode.done .lnode-btn{background:var(--yellow);box-shadow:0 8px 0 var(--yellow-dark)}
+.lnode.done .lnode-btn:active{box-shadow:0 3px 0 var(--yellow-dark)}
+
+/* stars + label */
+.lnode .stars{margin-top:12px;font-size:.72rem;letter-spacing:2px;color:var(--yellow-dark);height:1em;line-height:1}
+.lnode .nlabel{margin-top:6px;font-weight:700;font-size:.78rem;text-align:center;color:var(--ink-soft);max-width:140px;line-height:1.25}
+.lnode.current .nlabel{color:var(--blue-dark)}
+.lnode.done .nlabel{color:var(--ink)}
+
+/* bouncing START bubble */
+.startbubble{
+  position:absolute;bottom:calc(100% + 14px);left:50%;
+  background:#fff;border:2px solid var(--border);border-radius:14px;
+  padding:7px 15px;font-weight:800;font-size:.72rem;letter-spacing:.05em;color:var(--blue-dark);
+  white-space:nowrap;box-shadow:0 3px 6px rgba(0,0,0,.09);z-index:3;
+  animation:bob 1.5s ease-in-out infinite;
 }
+.startbubble::before,.startbubble::after{
+  content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:solid transparent;
+}
+.startbubble::before{border-width:9px;border-top-color:var(--border)}
+.startbubble::after{border-width:7px;border-top-color:#fff;margin-top:-2px}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+
+/* click-to-open popover (Duolingo lesson card) */
+.lnode.open{z-index:40}
+.node-pop{
+  position:absolute;top:calc(100% + 16px);left:50%;transform:translateX(-50%);
+  width:230px;max-width:78vw;z-index:5;text-align:center;
+  background:var(--blue);color:#fff;border-radius:16px;padding:15px 15px 14px;
+  box-shadow:0 8px 20px rgba(0,0,0,.2);
+  animation:popIn .13s ease-out;
+}
+.node-pop::before{
+  content:"";position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+  border:10px solid transparent;border-bottom-color:var(--blue);
+}
+.node-pop.done{background:var(--yellow)}
+.node-pop.done::before{border-bottom-color:var(--yellow)}
+.node-pop .np-title{font-weight:800;font-size:1rem;font-family:var(--font-display)}
+.node-pop .np-sub{font-size:.82rem;opacity:.92;margin-top:3px}
+.node-pop .np-btn{
+  display:block;width:100%;margin-top:13px;background:#fff;border-radius:12px;
+  padding:12px;font-weight:800;font-size:.82rem;letter-spacing:.03em;color:var(--blue-dark);
+  box-shadow:0 3px 0 rgba(0,0,0,.14);
+}
+.node-pop .np-btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.14)}
+.node-pop.done .np-btn{color:var(--yellow-dark)}
+@keyframes popIn{from{opacity:0;transform:translateX(-50%) translateY(-6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
 /* ============ GENERIC CARD ============ */
 .card{
@@ -400,7 +466,8 @@ const ICONS = {
   "library":'<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>',
   "download":'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
   "mail":'<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
-  "book":'<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/>'
+  "book":'<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/>',
+  "lock":'<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'
 };
 /* I(name, filled) -> inline SVG string; always renders, no hydration */
 function I(name, filled){
@@ -441,6 +508,7 @@ const I18N = {
     getBook:"Sider adlis", getBookSub:"Adlis « Ad aruɣ war tuccḍiwin » s PDF, d ilelli.",
     download:"Sider PDF",
     contact:"Nermes-aɣ", contactSub:"Ma tebɣiḍ ad d-ternuḍ neɣ ad tseɣtiḍ kra:",
+    levelDone:"Tfukkeḍ tamsirt-a!", practice:"Ɛawed",
   },
   fr: {
     tabHome:"Accueil", tabLib:"Règles",
@@ -881,7 +949,7 @@ function setLang(l){
 }
 
 /* ---------------- Tabs / root render ---------------- */
-function goTab(tab){ state.tab = tab; state.session = null; render(); }
+function goTab(tab){ state.tab = tab; state.session = null; state.selectedNode = null; render(); }
 
 function setBottomMode(mode, footHTML){
   /* mode: 'tabs' -> show nav; 'foot' -> show lesson action bar */
@@ -908,20 +976,58 @@ function render(){
 }
 
 /* ---------------- HOME ---------------- */
+/* serpentine horizontal offsets (Duolingo-style winding path) */
+const PATH_CYCLE = [0, -46, -74, -46, 0, 46, 74, 46];
+const RING = '<svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="var(--blue-soft)" stroke-width="8"/></svg>';
+const XP_PRACTICE = 5;
+
+function nodePopover(u, i, done){
+  const sub = done ? `<div class="np-sub">${esc(t("levelDone"))}</div>` : "";
+  const label = done
+    ? `${esc(t("practice")).toUpperCase()} +${XP_PRACTICE} XP`
+    : esc(t("start")).toUpperCase();
+  return `<div class="node-pop ${done?"done":""}" onclick="event.stopPropagation()">
+      <div class="np-title">${esc(u.title[state.lang])}</div>
+      ${sub}
+      <button class="np-btn" onclick="startLesson(${i})">${label}</button>
+    </div>`;
+}
+
+function toggleNode(i, ev){
+  if(ev) ev.stopPropagation();
+  state.selectedNode = (state.selectedNode === i) ? null : i;
+  render();
+}
+
 function renderHome(){
   let firstIncomplete = UNITS.findIndex(u=>!(state.progress[u.id]&&state.progress[u.id].done));
   if(firstIncomplete === -1) firstIncomplete = UNITS.length;
+  const doneCount = UNITS.filter(u=>state.progress[u.id]&&state.progress[u.id].done).length;
+
+  const sel = state.selectedNode;
   const nodes = UNITS.map((u,i)=>{
     const pr = state.progress[u.id];
     const done = pr && pr.done;
     const cur = i === firstIncomplete;
-    const stars = done ? "★".repeat(pr.stars)+"☆".repeat(3-pr.stars) : "";
+    const open = sel === i;                 /* popover ouvert sur ce nœud */
+    const cls = done ? "done" : cur ? "current" : "";
+    const dx = PATH_CYCLE[i % PATH_CYCLE.length];
+    const icon = done ? I("check") : I(u.icon);
+    const stars = done ? `<div class="stars">${"★".repeat(pr.stars)}${"☆".repeat(3-pr.stars)}</div>` : "";
+    /* bulle-indice COMMENCER sur le nœud courant, seulement si aucun popover n'est ouvert */
+    const bubble = (cur && sel==null) ? `<div class="startbubble">${esc(t("start")).toUpperCase()}</div>` : "";
+    const ring = cur ? RING : "";
+    const pop = open ? nodePopover(u, i, done) : "";
     return `
-      <div class="node ${done?"done":""} ${cur?"current":""}">
-        <button class="node-btn" onclick="startLesson(${i})" aria-label="${esc(u.title[state.lang])}">
-          ${I(u.icon)}
-        </button>
-        <div class="stars">${stars}</div>
+      <div class="lnode ${cls} ${open?"open":""}" style="transform:translateX(${dx}px)">
+        <div class="lnode-top">
+          ${bubble}${ring}
+          <button class="lnode-btn" onclick="toggleNode(${i},event)" aria-label="${esc(u.title[state.lang])}">
+            ${icon}
+          </button>
+          ${pop}
+        </div>
+        ${stars}
         <div class="nlabel">${i+1}. ${esc(u.title[state.lang])}</div>
       </div>`;
   }).join("");
@@ -932,7 +1038,13 @@ function renderHome(){
       <div class="streakline">${I("flame")} ${state.streak} ${esc(t("streak"))}</div>
     </div>
     ${bookCard()}
-    <h2 style="font-size:1.1rem;margin-bottom:4px;color:var(--blue-dark)">${esc(t("lessons"))}</h2>
+    <div class="unit-header">
+      <div>
+        <div class="uh-sub">${doneCount} / ${UNITS.length}</div>
+        <div class="uh-title">${esc(t("lessons"))}</div>
+      </div>
+      <button class="uh-guide" onclick="goTab('lib')" aria-label="${esc(t("tabLib"))}">${I("book")}</button>
+    </div>
     <div class="path">${nodes}</div>`;
   $("main").scrollTop = 0;
 }
@@ -949,6 +1061,7 @@ function startLesson(idx){
   ];
   state.session = {unitIdx:idx, steps, i:0, mistakes:0, correct:0, requeued:new Set(), practice:false};
   state.hearts = 4;
+  state.selectedNode = null;
   render();
 }
 
@@ -1386,6 +1499,14 @@ function renderLib(){
   await loadState();
   setLang(state.lang);
 })();
+
+/* fermer le popover d'un nœud en cliquant ailleurs */
+document.addEventListener("click", function(e){
+  if(!state.session && state.tab==="home" && state.selectedNode!=null && !e.target.closest(".lnode")){
+    state.selectedNode = null;
+    render();
+  }
+});
 
 /* ---------------- PWA : service worker ---------------- */
 if ("serviceWorker" in navigator) {

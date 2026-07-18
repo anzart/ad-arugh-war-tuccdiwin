@@ -227,23 +227,20 @@ nav.tabs .ticn svg.lic{width:1.35rem;height:1.35rem}
 .lnode{position:relative;display:flex;flex-direction:column;align-items:center;margin-bottom:24px}
 .lnode.current{margin-top:34px}
 .lnode-top{position:relative;display:flex;align-items:center;justify-content:center;width:74px;height:74px}
-.lnode .ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scaleY(.93);width:94px;height:94px;pointer-events:none}
+/* contour = cercle parfait qui entoure le bouton + son ombre 3D */
+.lnode .ring{position:absolute;left:50%;top:calc(50% + 3px);transform:translate(-50%,-50%);width:92px;height:92px;pointer-events:none}
 
 /* 3D "pushable" button */
 .lnode-btn{
   width:74px;height:68px;border-radius:50%;position:relative;z-index:1;
   display:flex;align-items:center;justify-content:center;
-  border:none;color:#fff;background:var(--blue);
-  box-shadow:0 5px 0 var(--blue-dark);
+  border:none;color:#fff;background:var(--nc,var(--blue));
+  box-shadow:0 5px 0 var(--ncd,var(--blue-dark));
   transition:transform .09s ease, box-shadow .09s ease;
   cursor:pointer;
 }
 .lnode-btn svg.lic{width:2rem;height:2rem;stroke-width:2.6}
-.lnode-btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--blue-dark)}
-
-/* leçon terminée -> dorée */
-.lnode.done .lnode-btn{background:var(--yellow);box-shadow:0 5px 0 var(--yellow-dark)}
-.lnode.done .lnode-btn:active{box-shadow:0 2px 0 var(--yellow-dark)}
+.lnode-btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ncd,var(--blue-dark))}
 
 /* stars + label */
 .lnode .stars{margin-top:12px;font-size:.72rem;letter-spacing:2px;color:var(--yellow-dark);height:1em;line-height:1}
@@ -1010,7 +1007,7 @@ function setLang(l){
 }
 
 /* ---------------- Tabs / root render ---------------- */
-function goTab(tab){ state.tab = tab; state.session = null; state.selectedNode = null; render(); }
+function goTab(tab){ state.tab = tab; state.session = null; state.selectedNode = null; render(); $("main").scrollTop = 0; }
 
 function setBottomMode(mode, footHTML){
   /* mode: 'tabs' -> show nav; 'foot' -> show lesson action bar */
@@ -1040,7 +1037,19 @@ function render(){
 /* ---------------- HOME ---------------- */
 /* serpentine horizontal offsets (Duolingo-style winding path) */
 const PATH_CYCLE = [0, -46, -74, -46, 0, 46, 74, 46];
-const RING = '<svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="var(--blue-soft)" stroke-width="8"/></svg>';
+/* une couleur (fond + ombre 3D) par leçon */
+const NODE_COLORS = [
+  ["#4285F4","#1A5FCC"], // bleu
+  ["#34A853","#188038"], // vert
+  ["#F9AB00","#D18A00"], // ambre
+  ["#EA4335","#C5221F"], // rouge
+  ["#A142F4","#7B27C1"], // violet
+  ["#12B5CB","#0B8A99"], // turquoise
+  ["#F538A0","#C21E77"], // rose
+  ["#6366F1","#4338CA"], // indigo
+  ["#FA7B17","#D9640C"], // orange
+];
+const RING = '<svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="var(--nc,var(--blue))" stroke-opacity=".26" stroke-width="8"/></svg>';
 const XP_PRACTICE = 5;
 
 function nodePopover(u, i, done){
@@ -1062,6 +1071,7 @@ function toggleNode(i, ev){
 }
 
 function renderHome(){
+  const prevScroll = $("main").scrollTop;   /* préserver la position (ne pas sauter en haut) */
   let firstIncomplete = UNITS.findIndex(u=>!(state.progress[u.id]&&state.progress[u.id].done));
   if(firstIncomplete === -1) firstIncomplete = UNITS.length;
   const doneCount = UNITS.filter(u=>state.progress[u.id]&&state.progress[u.id].done).length;
@@ -1074,6 +1084,7 @@ function renderHome(){
     const open = sel === i;                 /* popover ouvert sur ce nœud */
     const cls = done ? "done" : cur ? "current" : "";
     const dx = PATH_CYCLE[i % PATH_CYCLE.length];
+    const c = NODE_COLORS[i % NODE_COLORS.length];
     const icon = done ? I("check") : I(u.icon);
     const stars = done ? `<div class="stars">${"★".repeat(pr.stars)}${"☆".repeat(3-pr.stars)}</div>` : "";
     /* bulle-indice COMMENCER sur le nœud courant, seulement si aucun popover n'est ouvert */
@@ -1081,7 +1092,7 @@ function renderHome(){
     const ring = cur ? RING : "";
     const pop = open ? nodePopover(u, i, done) : "";
     return `
-      <div class="lnode ${cls} ${open?"open":""}" style="transform:translateX(${dx}px)">
+      <div class="lnode ${cls} ${open?"open":""}" style="transform:translateX(${dx}px);--nc:${c[0]};--ncd:${c[1]}">
         <div class="lnode-top">
           ${bubble}${ring}
           <button class="lnode-btn" onclick="toggleNode(${i},event)" aria-label="${esc(u.title[state.lang])}">
@@ -1107,7 +1118,7 @@ function renderHome(){
       <button class="uh-guide" onclick="goTab('lib')" aria-label="${esc(t("tabLib"))}">${I("book")}</button>
     </div>
     <div class="path">${nodes}</div>`;
-  $("main").scrollTop = 0;
+  $("main").scrollTop = prevScroll;
 }
 
 /* ---------------- LESSON ENGINE ---------------- */

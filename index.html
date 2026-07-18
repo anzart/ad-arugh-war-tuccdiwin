@@ -534,6 +534,7 @@ function I(name, filled){
 const I18N = {
   kab: {
     tabHome:"Agejdan", tabLib:"Ilugan", install:"Sebded",
+    iosTitle:"Sebded asnas", iosMsg:"Ldi asmel-a s Safari, sit ɣef ubuton « Partager », syen fren « Rnu ɣer ugdil agejdan ».",
     heroTitle:"Ad aruɣ war tuccḍiwin!",
     heroSub:"Win yebɣan Tamaziɣt, ad yissin tira-s! Lɛeb, lmed, seɣti.",
     lessons:"Timsirin", start:"Bdu", replay:"Ɛawed",
@@ -568,6 +569,7 @@ const I18N = {
   },
   fr: {
     tabHome:"Accueil", tabLib:"Règles", install:"Installer",
+    iosTitle:"Installer l'app", iosMsg:"Ouvre ce site dans Safari, appuie sur le bouton « Partager », puis « Sur l'écran d'accueil ».",
     heroTitle:"Ad aruɣ war tuccḍiwin!",
     heroSub:"« J'écrirai sans fautes ! » — Joue, apprends et corrige ton kabyle écrit.",
     lessons:"Leçons", start:"Commencer", replay:"Rejouer",
@@ -1629,22 +1631,54 @@ if ("serviceWorker" in navigator) {
 
 /* ---------------- PWA : invite d'installation ---------------- */
 let deferredPrompt = null;
-window.addEventListener("beforeinstallprompt", function(e){
-  e.preventDefault();          // empêcher l'invite mini-infobar par défaut
-  deferredPrompt = e;          // la garder pour la déclencher au clic
-  const b = $("installBtn"); if(b) b.classList.add("show");
-});
-async function promptInstall(){
-  if(!deferredPrompt) return;
-  deferredPrompt.prompt();
-  try { await deferredPrompt.userChoice; } catch(_) {}
-  deferredPrompt = null;
-  const b = $("installBtn"); if(b) b.classList.remove("show");
+function isStandalone(){
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
 }
-window.addEventListener("appinstalled", function(){
-  deferredPrompt = null;
-  const b = $("installBtn"); if(b) b.classList.remove("show");
+function isIOS(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+function showInstallBtn(){ const b=$("installBtn"); if(b) b.classList.add("show"); }
+function hideInstallBtn(){ const b=$("installBtn"); if(b) b.classList.remove("show"); }
+
+/* Android/desktop : Chrome fournit l'invite native */
+window.addEventListener("beforeinstallprompt", function(e){
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBtn();
 });
+window.addEventListener("appinstalled", function(){ deferredPrompt = null; hideInstallBtn(); });
+
+/* iOS (Safari/Chrome = WebKit) : pas d'invite native -> afficher les instructions */
+if(isIOS() && !isStandalone()) showInstallBtn();
+
+async function promptInstall(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    try { await deferredPrompt.userChoice; } catch(_) {}
+    deferredPrompt = null;
+    hideInstallBtn();
+    return;
+  }
+  showInstallHelp();   // iOS ou navigateur sans invite native
+}
+function showInstallHelp(){
+  if($("imodal")) return;
+  const d = document.createElement("div");
+  d.className = "modal-bg"; d.id = "imodal";
+  d.addEventListener("click", function(ev){ if(ev.target===d) d.remove(); });
+  d.insertAdjacentHTML("beforeend", `<div class="modal">
+    <span class="yaz-badge" style="width:60px;height:60px;margin:0 auto 10px">
+      <svg class="yaz" style="width:36px;height:36px" viewBox="0 0 60 60" aria-hidden="true">
+        <path d="M30 6 L14 20 M30 6 L46 20 M30 6 L30 40 M14 54 L30 40 L46 54 M8 32 L52 32" stroke="#EA4335" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </span>
+    <h3 style="color:var(--ink)">${esc(t("iosTitle"))}</h3>
+    <p>${esc(t("iosMsg"))}</p>
+    <button class="bigbtn blueb" onclick="this.closest('.modal-bg').remove()">OK</button>
+  </div>`);
+  document.body.appendChild(d);
+}
 </script>
 </body>
 </html>

@@ -147,6 +147,10 @@ nav.tabs .ticn svg.lic{width:1.35rem;height:1.35rem}
 .bigbtn.redb{background:var(--red);box-shadow:0 3px 0 var(--red-dark)}
 .bigbtn.redb:active{box-shadow:0 1px 0 var(--red-dark)}
 .bigbtn.ghost{background:#fff;color:var(--blue-dark);border:2px solid var(--blue);box-shadow:0 3px 0 var(--blue-soft)}
+.bigbtn.blueb{background:var(--blue);box-shadow:0 3px 0 var(--blue-dark)}
+.bigbtn.blueb:active{box-shadow:0 1px 0 var(--blue-dark)}
+.textbtn{width:100%;background:none;color:var(--red-dark);font-family:var(--font-display);font-weight:800;font-size:.9rem;letter-spacing:.4px;padding:12px;border-radius:12px}
+.textbtn:active{background:var(--red-soft)}
 
 /* ============ DOWNLOAD BOOK + CONTACT CARDS ============ */
 .bookcard{
@@ -538,6 +542,8 @@ const I18N = {
     heartsOut:"Ulawen fukken!",
     heartsOutMsg:"Ulac aɣilif — kemmel s ulmud, neɣ ɛawed tamsirt.",
     keepGoing:"Kemmel s ulmud", restart:"Ɛawed si tazwara",
+    quitTitle:"Rǧu, ur ffeɣ ara!", quitMsg:"Ma tḥebseḍ tura, ad iruḥ wayen txedmeḍ.",
+    keepLearning:"Kemmel almad", stopSession:"Ḥbes tamsirt",
     rule:"Alugen", quiz:"Urar",
     libTitle:"Ilugan igejdanen n tmaziɣt",
     libSub:"Akk ilugan n teftart, taggayt s taggayt.",
@@ -570,6 +576,8 @@ const I18N = {
     heartsOut:"Plus de cœurs !",
     heartsOutMsg:"Pas de souci — continue en mode entraînement, ou recommence la leçon.",
     keepGoing:"Mode entraînement", restart:"Recommencer",
+    quitTitle:"Attends, ne pars pas !", quitMsg:"Si tu arrêtes maintenant, tu perdras ta progression.",
+    keepLearning:"Continue d'apprendre", stopSession:"Arrêter la session",
     rule:"Règle", quiz:"Jeu",
     libTitle:"Règles principales du tamazight",
     libSub:"Toutes les règles du livret, catégorie par catégorie.",
@@ -1124,7 +1132,7 @@ function renderStep(){
 
   $("main").innerHTML = `
     <div class="lesson-top">
-      <button class="quitbtn" onclick="quitLesson()" aria-label="Quit">${I("x")}</button>
+      <button class="quitbtn" onclick="confirmQuit()" aria-label="Quit">${I("x")}</button>
       <div class="pbar"><div style="width:${pct}%"></div></div>
       <div class="lesson-hearts">${s.practice ? I("graduation-cap") : I("heart", true)+" "+state.hearts}</div>
     </div>
@@ -1370,6 +1378,26 @@ function restartLesson(){
   const m=$("hmodal"); if(m) m.remove();
   startLesson(state.session.unitIdx);
 }
+
+/* ---- quit confirmation (Duolingo-style) ---- */
+function confirmQuit(){
+  if($("qmodal")) return;
+  const d = document.createElement("div");
+  d.className = "modal-bg"; d.id = "qmodal";
+  d.insertAdjacentHTML("beforeend", `<div class="modal">
+    <span class="yaz-badge" style="width:66px;height:66px;margin:0 auto 10px">
+      <svg class="yaz" style="width:40px;height:40px" viewBox="0 0 60 60" aria-hidden="true">
+        <path d="M30 6 L14 20 M30 6 L46 20 M30 6 L30 40 M14 54 L30 40 L46 54 M8 32 L52 32" stroke="#EA4335" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </span>
+    <p style="font-weight:700;font-size:1rem;color:var(--ink);margin-bottom:14px">${esc(t("quitTitle"))} ${esc(t("quitMsg"))}</p>
+    <button class="bigbtn blueb" style="margin-bottom:6px" onclick="closeQuit()">${esc(t("keepLearning")).toUpperCase()}</button>
+    <button class="textbtn" onclick="doQuit()">${esc(t("stopSession")).toUpperCase()}</button>
+  </div>`);
+  document.body.appendChild(d);
+}
+function closeQuit(){ const m=$("qmodal"); if(m) m.remove(); }
+function doQuit(){ closeQuit(); quitLesson(); }
 
 function advance(){
   state.session.i++;

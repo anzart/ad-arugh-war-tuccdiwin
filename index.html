@@ -102,6 +102,9 @@ header::after{
 }
 .lang-switch button{padding:4px 9px;color:var(--blue-dark);background:transparent}
 .lang-switch button.active{background:var(--blue);color:#fff}
+.install-btn{display:none;align-items:center;gap:4px;background:var(--green);color:#fff;font-weight:700;font-size:.72rem;padding:6px 11px;border-radius:999px;flex:none;box-shadow:0 2px 0 var(--green-dark)}
+.install-btn.show{display:inline-flex}
+.install-btn:active{transform:translateY(1px);box-shadow:0 1px 0 var(--green-dark)}
 
 main{
   flex:1 1 0;min-height:0;
@@ -456,6 +459,7 @@ table.reft td.r{color:var(--green-dark);font-weight:700}
       </span>
     </div>
     <div class="spacer"></div>
+    <button id="installBtn" class="install-btn" onclick="promptInstall()" aria-label="Installer"><span aria-hidden="true">⬇</span><span id="installLbl">Installer</span></button>
     <div class="stat hearts"><span id="hIcn"></span><span id="statHearts">4</span></div>
     <div class="stat xp"><span id="xIcn"></span><span id="statXP">0</span></div>
     <div class="lang-switch" role="group" aria-label="Language">
@@ -529,7 +533,7 @@ function I(name, filled){
 /* ---------------- i18n UI strings ---------------- */
 const I18N = {
   kab: {
-    tabHome:"Agejdan", tabLib:"Ilugan",
+    tabHome:"Agejdan", tabLib:"Ilugan", install:"Sebded",
     heroTitle:"Ad aruɣ war tuccḍiwin!",
     heroSub:"Win yebɣan Tamaziɣt, ad yissin tira-s! Lɛeb, lmed, seɣti.",
     lessons:"Timsirin", start:"Bdu", replay:"Ɛawed",
@@ -563,7 +567,7 @@ const I18N = {
     levelDone:"Tfukkeḍ tamsirt-a!", practice:"Ɛawed",
   },
   fr: {
-    tabHome:"Accueil", tabLib:"Règles",
+    tabHome:"Accueil", tabLib:"Règles", install:"Installer",
     heroTitle:"Ad aruɣ war tuccḍiwin!",
     heroSub:"« J'écrirai sans fautes ! » — Joue, apprends et corrige ton kabyle écrit.",
     lessons:"Leçons", start:"Commencer", replay:"Rejouer",
@@ -998,6 +1002,7 @@ function setLang(l){
   $("btnFr").classList.toggle("active", l==="fr");
   $("tabHomeL").textContent = t("tabHome");
   $("tabLibL").textContent  = t("tabLib");
+  { const il = $("installLbl"); if(il) il.textContent = t("install"); }
   document.documentElement.lang = (l==="kab" ? "kab" : "fr");
   saveState();
   render();
@@ -1621,6 +1626,25 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(function(){});
   });
 }
+
+/* ---------------- PWA : invite d'installation ---------------- */
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", function(e){
+  e.preventDefault();          // empêcher l'invite mini-infobar par défaut
+  deferredPrompt = e;          // la garder pour la déclencher au clic
+  const b = $("installBtn"); if(b) b.classList.add("show");
+});
+async function promptInstall(){
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  try { await deferredPrompt.userChoice; } catch(_) {}
+  deferredPrompt = null;
+  const b = $("installBtn"); if(b) b.classList.remove("show");
+}
+window.addEventListener("appinstalled", function(){
+  deferredPrompt = null;
+  const b = $("installBtn"); if(b) b.classList.remove("show");
+});
 </script>
 </body>
 </html>

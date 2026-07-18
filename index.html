@@ -78,7 +78,7 @@ header{
   flex:none;position:relative;
   background:#fff;
   border-bottom:1px solid var(--border);
-  padding:10px 12px 12px;display:flex;align-items:center;gap:8px;flex-wrap:nowrap;
+  padding:calc(10px + env(safe-area-inset-top)) 12px 12px;display:flex;align-items:center;gap:8px;flex-wrap:nowrap;
 }
 header::after{
   content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;
@@ -112,11 +112,15 @@ main{
   padding:16px 14px 24px;
 }
 
-/* ---- bottom bars: normal flow, always on screen ---- */
-#bottombar{flex:none;padding-bottom:env(safe-area-inset-bottom)}
+/* ---- bottom bars: normal flow, always on screen ----
+   Le padding du safe-area (barre d'accueil iPhone / navigation Android) est
+   porté par les barres elles-mêmes pour que LEUR fond aille jusqu'au bas de
+   l'écran (sinon on voit le blanc du body en dessous). */
+#bottombar{flex:none}
 nav.tabs{
   background:#fff;border-top:1px solid var(--border);
-  display:flex;justify-content:center;gap:6px;padding:6px 8px;
+  display:flex;justify-content:center;gap:6px;
+  padding:6px 8px calc(6px + env(safe-area-inset-bottom));
 }
 nav.tabs button{
   flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
@@ -127,7 +131,7 @@ nav.tabs .ticn svg.lic{width:1.35rem;height:1.35rem}
 
 .foot{
   background:#fff;border-top:1px solid var(--border);
-  padding:12px 14px;
+  padding:12px 14px calc(12px + env(safe-area-inset-bottom));
   transition:background .2s;
 }
 .foot.ok{background:var(--ok-soft)}
@@ -424,7 +428,7 @@ table.reft td.r{color:var(--green-dark);font-weight:700}
 /* pendant une leçon : masquer le header global (comme Duolingo) */
 #app.in-lesson>header{display:none}
 /* centrer la question verticalement (et horizontalement) dans l'espace libre */
-#app.in-lesson main{display:flex;flex-direction:column}
+#app.in-lesson main{display:flex;flex-direction:column;padding-top:calc(16px + env(safe-area-inset-top))}
 #app.in-lesson .lesson-top{flex:none;width:100%}
 #app.in-lesson .step{width:100%;margin-top:auto;margin-bottom:auto}
 

@@ -122,11 +122,20 @@ nav.tabs .ticn svg.lic{width:1.35rem;height:1.35rem}
 }
 .foot.ok{background:var(--green-soft)}
 .foot.ko{background:var(--red-soft)}
-.fb-title{font-family:var(--font-display);font-weight:700;font-size:1rem;margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.fb-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.fb-icn{width:46px;height:46px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:#fff}
+.fb-icn.ok{color:var(--green-dark)}
+.fb-icn.ko{color:var(--red-dark)}
+.fb-icn svg.lic{width:1.7rem;height:1.7rem;stroke-width:3}
+.fb-title{font-family:var(--font-display);font-weight:800;font-size:1.05rem;display:flex;align-items:center;gap:6px}
 .foot.ok .fb-title{color:var(--green-dark)}
 .foot.ko .fb-title{color:var(--red-dark)}
-.fb-body{font-size:.9rem;margin-bottom:8px}
+.fb-body{font-size:.9rem;margin-top:2px}
 .fb-body b{font-size:1rem}
+.foot-row{display:flex;gap:10px;align-items:stretch}
+.foot-row .bigbtn{margin:0}
+.foot-row .skip{flex:0 0 auto;width:auto;padding-left:22px;padding-right:22px}
+.foot-row .check{flex:1}
 .bigbtn{
   display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
   background:var(--green);color:#fff;font-family:var(--font-display);font-weight:700;
@@ -308,19 +317,28 @@ nav.tabs .ticn svg.lic{width:1.35rem;height:1.35rem}
 }
 .ctxnote{font-size:.84rem;color:var(--ink-soft);margin-top:6px}
 
-.opts{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.opts{display:flex;flex-direction:column;gap:10px;margin-top:14px}
 .opt{
-  text-align:left;background:#fff;border:2px solid var(--border);border-radius:14px;
-  padding:11px 13px;font-size:1rem;font-weight:600;box-shadow:var(--shadow);
-  transition:border-color .15s, background .15s, transform .1s;
-  display:flex;align-items:center;gap:8px;
+  position:relative;text-align:center;background:#fff;border:2px solid var(--border);
+  border-bottom-width:4px;border-radius:14px;
+  padding:14px 46px;font-size:1rem;font-weight:700;color:var(--ink);min-height:54px;
+  transition:border-color .12s, background .12s, transform .06s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
 }
-.opt:active{transform:scale(.98)}
-.opt.sel{border-color:var(--blue);background:var(--blue-soft)}
-.opt.good{border-color:var(--green);background:var(--green-soft)}
-.opt.bad{border-color:var(--red);background:var(--red-soft)}
+.opt-num{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:26px;height:26px;border-radius:8px;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:var(--ink-soft);
+}
+.opt:active{transform:translateY(1px)}
+.opt.sel{border-color:var(--blue);background:var(--blue-soft);color:var(--blue-dark)}
+.opt.sel .opt-num{border-color:var(--blue);color:var(--blue-dark)}
+.opt.good{border-color:var(--green);background:var(--green-soft);color:var(--green-dark)}
+.opt.good .opt-num{border-color:var(--green);color:var(--green-dark)}
+.opt.bad{border-color:var(--red);background:var(--red-soft);color:var(--red-dark)}
+.opt.bad .opt-num{border-color:var(--red);color:var(--red-dark)}
 .opts.tf{flex-direction:row}
-.opts.tf .opt{flex:1;justify-content:center;text-align:center}
+.opts.tf .opt{flex:1;padding:14px 12px;gap:6px}
 .opt .tficn-true{color:var(--green-dark);display:flex}
 .opt .tficn-false{color:var(--red-dark);display:flex}
 
@@ -392,6 +410,28 @@ table.reft td.r{color:var(--green-dark);font-weight:700}
 
 @media (prefers-reduced-motion:reduce){
   *{animation:none !important;transition:none !important}
+}
+
+/* pendant une leçon : masquer le header global (comme Duolingo) */
+#app.in-lesson>header{display:none}
+
+/* ============ DESKTOP: full-bleed backgrounds, ~800px centered content ============ */
+@media (min-width:900px){
+  #app{max-width:none}
+  header{padding-left:5vw;padding-right:5vw}
+  main{padding:20px 24px 56px}
+  /* everything the user reads/acts on is capped at ~800px, centered */
+  .lesson-top,.step,.hero,.bookcard,.unit-header,.path,.lib,.contactcard{
+    max-width:800px;margin-left:auto;margin-right:auto;
+  }
+  /* footer background is full-bleed; its content is centered at ~800px */
+  #footWrap{display:flex;align-items:center;justify-content:flex-end;gap:24px;max-width:800px;margin:0 auto}
+  #footWrap .fb-head{margin-bottom:0;margin-right:auto}
+  #footWrap>.bigbtn{width:auto;min-width:220px;margin:0}
+  #footWrap .foot-row{flex:1;justify-content:flex-end;gap:12px}
+  #footWrap .foot-row .bigbtn{width:auto}
+  #footWrap .foot-row .skip{margin-right:auto}
+  #footWrap .foot-row .check{flex:0 0 auto;min-width:220px}
 }
 </style>
 </head>
@@ -483,7 +523,7 @@ const I18N = {
     heroTitle:"Ad aruɣ war tuccḍiwin!",
     heroSub:"Win yebɣan Tamaziɣt, ad yissin tira-s! Lɛeb, lmed, seɣti.",
     lessons:"Timsirin", start:"Bdu", replay:"Ɛawed",
-    check:"Senqed", cont:"Kemmel", skipRule:"Gziɣ, kemmel!",
+    check:"Senqed", cont:"Kemmel", skipRule:"Gziɣ, kemmel!", skip:"Zgel",
     ok:"Yelha!", okAlt:"D ayen icebḥen!",
     ko:"Tuccḍa!", theFix:"Aseɣti:",
     pickCorrect:"Fren tira taseɣtit:",
@@ -515,7 +555,7 @@ const I18N = {
     heroTitle:"Ad aruɣ war tuccḍiwin!",
     heroSub:"« J'écrirai sans fautes ! » — Joue, apprends et corrige ton kabyle écrit.",
     lessons:"Leçons", start:"Commencer", replay:"Rejouer",
-    check:"Vérifier", cont:"Continuer", skipRule:"Compris, continuer !",
+    check:"Vérifier", cont:"Continuer", skipRule:"Compris, continuer !", skip:"Passer",
     ok:"Bravo !", okAlt:"Excellent !",
     ko:"Oups, faute !", theFix:"Correction :",
     pickCorrect:"Choisis la forme correcte :",
@@ -968,6 +1008,7 @@ function setBottomMode(mode, footHTML){
 function render(){
   $("statHearts").textContent = state.hearts;
   $("statXP").textContent = state.xp;
+  $("app").classList.toggle("in-lesson", !!state.session);
   $("tabHome").classList.toggle("active", state.tab==="home" && !state.session);
   $("tabLib").classList.toggle("active", state.tab==="lib" && !state.session);
   if(state.session){ renderStep(); }
@@ -1092,8 +1133,11 @@ function renderStep(){
 
   setBottomMode("foot",
     step.type==="rule"
-      ? `<button class="bigbtn" onclick="advance()">${esc(t("skipRule"))}</button>`
-      : `<button class="bigbtn" id="checkBtn" disabled onclick="checkAnswer()">${esc(t("check"))}</button>`);
+      ? `<button class="bigbtn" onclick="advance()">${esc(t("skipRule")).toUpperCase()}</button>`
+      : `<div class="foot-row">
+           <button class="bigbtn ghost skip" onclick="skipAnswer()">${esc(t("skip")).toUpperCase()}</button>
+           <button class="bigbtn check" id="checkBtn" disabled onclick="checkAnswer()">${esc(t("check")).toUpperCase()}</button>
+         </div>`);
 
   requestAnimationFrame(()=>{ const p=$("main").querySelector(".pbar>div"); if(p) p.style.width=pct+"%"; });
 }
@@ -1113,7 +1157,7 @@ let sel = null;
 function fixHTML(step){
   sel = null;
   step._shuffled = shuffle(step.opts);
-  const opts = step._shuffled.map((o,i)=>`<button class="opt" data-i="${i}" data-v="${esc(o)}" onclick="selectOpt(this)">${esc(o)}</button>`).join("");
+  const opts = step._shuffled.map((o,i)=>`<button class="opt" data-i="${i}" data-v="${esc(o)}" onclick="selectOpt(this)"><span class="opt-num">${i+1}</span><span class="opt-txt">${esc(o)}</span></button>`).join("");
   return `<p class="prompt">${esc(t("fixThis"))}</p>
     <div><span class="wrongword">${esc(step.wrong)}</span></div>
     <div class="opts">${opts}</div>`;
@@ -1121,7 +1165,7 @@ function fixHTML(step){
 function pickHTML(step){
   sel = null;
   step._shuffled = shuffle(step.opts);
-  const opts = step._shuffled.map((o,i)=>`<button class="opt" data-i="${i}" data-v="${esc(o)}" onclick="selectOpt(this)">${esc(o)}</button>`).join("");
+  const opts = step._shuffled.map((o,i)=>`<button class="opt" data-i="${i}" data-v="${esc(o)}" onclick="selectOpt(this)"><span class="opt-num">${i+1}</span><span class="opt-txt">${esc(o)}</span></button>`).join("");
   return `<p class="prompt">${esc(t("pickCorrect"))}</p>
     ${step.ctx?`<p class="ctxnote">${esc(step.ctx)}</p>`:""}
     <div class="opts">${opts}</div>`;
@@ -1218,6 +1262,16 @@ function tapMatch(btn){
 }
 
 /* --- answer checking --- */
+function skipAnswer(){
+  const step = state.session.steps[state.session.i];
+  let fixText = "", exp = "";
+  if(step.type==="fix") fixText = step.right;
+  else if(step.type==="pick"){ fixText = step.correct; exp = state.lang==="fr" ? (step.expF||"") : (step.expK||""); }
+  else if(step.type==="tf") fixText = step.answer ? t("tTrue") : t("tFalse");
+  else if(step.type==="tiles") fixText = step.right;
+  finishStep(false, fixText, exp);
+}
+
 function checkAnswer(){
   const step = state.session.steps[state.session.i];
   let good = false, fixText = "", exp = "";
@@ -1256,18 +1310,24 @@ function finishStep(good, fixText, exp){
     state.xp += 10;
     foot.classList.add("ok");
     wrap.innerHTML = `
-      <div class="fb-title">${I("circle-check")} ${esc(Math.random()<.5?t("ok"):t("okAlt"))} +10</div>
-      ${exp?`<div class="fb-body">${esc(exp)}</div>`:""}
-      <button class="bigbtn" onclick="advance()">${esc(t("cont"))} ${I("arrow-right")}</button>`;
+      <div class="fb-head">
+        <div class="fb-icn ok">${I("check")}</div>
+        <div><div class="fb-title">${esc(Math.random()<.5?t("ok"):t("okAlt"))} +10 XP</div>
+        ${exp?`<div class="fb-body">${esc(exp)}</div>`:""}</div>
+      </div>
+      <button class="bigbtn" onclick="advance()">${esc(t("cont")).toUpperCase()}</button>`;
   }else{
     s.mistakes++;
     loseHeart();
     $("stepBox").classList.add("shake");
     foot.classList.add("ko");
     wrap.innerHTML = `
-      <div class="fb-title">${I("circle-x")} ${esc(t("ko"))}</div>
-      <div class="fb-body">${fixText?`${esc(t("theFix"))} <b>${esc(fixText)}</b>`:""}${exp?`<br>${esc(exp)}`:""}</div>
-      <button class="bigbtn redb" onclick="advance()">${esc(t("cont"))} ${I("arrow-right")}</button>`;
+      <div class="fb-head">
+        <div class="fb-icn ko">${I("x")}</div>
+        <div><div class="fb-title">${esc(t("ko"))}</div>
+        <div class="fb-body">${fixText?`${esc(t("theFix"))} <b>${esc(fixText)}</b>`:""}${exp?`<br>${esc(exp)}`:""}</div></div>
+      </div>
+      <button class="bigbtn redb" onclick="advance()">${esc(t("cont")).toUpperCase()}</button>`;
     if(!s.requeued.has(step)){
       s.requeued.add(step);
       const copy = Object.assign({}, step);
